@@ -8,6 +8,7 @@ class newUser(BaseModel):
     name: str = Body(default=...)
     email: str = Body(default=...)
 
-@app.get("/")
-def root():
-    return {"message": "This is the root"}
+@app.post("/users")
+def createNewUser(userInfo: newUser):
+
+    return {"message": "User created Successfully"}

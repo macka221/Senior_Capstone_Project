@@ -32,7 +32,7 @@ $ export PYTHONPATH="$PWD/app/api/routes"
 $ python -m uvicorn app.api.routes.controller:app --reload
 ```
 
-After running the above commands you should be able to access the web-api using (this link)[http://localhost:8000/docs#/] as long as the port number was not changed. If you changes the port number user the port tag.
+After running the above commands you should be able to access the web-api using [this link](http://localhost:8000/docs#/) as long as the port number was not changed. If you changes the port number user the port tag.
 
 ## MacOS/Linux Set Up:
 ```terminal
