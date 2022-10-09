@@ -4,9 +4,6 @@ class institution:
         self.campuses = campuses
         self.name = name
 
-    def setAddress(self, address):
-        self.address = address
-
     def getAddress(self):
         return self.address
 
@@ -25,9 +22,6 @@ class campus:
         self.buildings = buildings
         self.name = name
 
-    def setAddress(self, address):
-        self.address = address
-
     def getAddress(self):
         return self.address
 
@@ -41,14 +35,12 @@ class campus:
         return self.name
 
 class building:
-    def __init__(self, address, rooms, name, admin, rate, provider, cost, consumption):
+    def __init__(self, address, rooms, name, admin,provider, consumption):
         self.address = address
         self.name = name
         self.admin = admin
         self.rooms = rooms
-        self.energy_rate_cost = rate
         self.energy_provider = provider
-        self.monthly_cost = cost
         self.monthly_energy_consumption = consumption
 
     def setEnergyRateCost(self, rate):
@@ -59,20 +51,6 @@ class building:
 
     def getEnergyProvider(self):
         return self.energy_provider
-
-    def setMonthlyCost(self, cost):
-        self.monthly_cost = cost
-
-    def setMonthlyConsumption(self, consumption):
-        self.monthly_energy_consumption = consumption
-
-    def getMonthlyCost(self):
-        return self.monthly_cost
-
-    def getMonthlyConsumption(self):
-        return self.monthly_energy_consumption
-    def setAddress(self, address):
-        self.address = address
 
     def getAddress(self):
         return self.address
@@ -112,3 +90,19 @@ class room:
 
     def getMaxOccupancy(self):
         return self.max_occupancy
+
+class provider:
+    def __init__(self, name, rate, cost):
+        self.rate = rate
+        self.name = provider
+        self.monthly_cost = cost
+
+    def setMonthlyCost(self, cost):
+        self.monthly_costcost = cost
+
+    def getMonthlyCost(self):
+        return self.monthly_cost
+
+
+institutions = []
+providers = []
