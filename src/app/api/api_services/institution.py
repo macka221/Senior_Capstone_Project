@@ -4,17 +4,17 @@ class institution:
         self.campuses = campuses
         self.name = name
 
-    def getAddress(self):
-        return self.address
+def getAddress(instituion):
+    return instituion.address
 
-    def addCampus(self, campus):
-        self.campuses.append(campus)
+def addCampus(institution):
+    institution.campuses.append(campus)
 
-    def getCampuses(self):
-        return self.campuses
+def getCampuses(institution):
+    return institution.campuses
 
-    def getName(self):
-        return self.name
+def getName(institution):
+    return institution.name
 
 class campus:
     def __init__(self, address, buildings, name):
