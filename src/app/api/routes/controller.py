@@ -4,6 +4,8 @@ from pydantic import BaseModel
 from app.api.downstreamServices.downstreamService import businessServices
 from typing import List
 
+import app.api.routes.constants as c
+
 app = FastAPI()
 
 apiServices = businessServices()
@@ -31,8 +33,22 @@ class newBuilding(BaseModel):
     consumption: float = Body(default=..., alias="total_energy_consumption")
     manager: str = Body(default=..., alias="building_manager_id")
 
-@app.post("/app/institutions")
-async def newInstitution(institutionInfo: newInstitution):
+@app.post("/app/institutions", summary="Create a new Institution")
+async def newInstitution(institutionInfo: newInstitution=Body(examples={"Successful Post": c._NEW_INSTITUTION})):
+    """
+    Use this endpoint if you would like to create a new instance of an institution. This requires a JSON body in the format of the example below.\n
+    **param** institutionInfo: the JSON body with the required information to create a new institution\n
+    **return**: the newly created object with it's unique id.\n
+    **Ex)**\n
+
+        {
+            "institution_name": "<name_of_organization>",
+            "institution_address": "<address_of_org>",
+            "associated_campuses": [
+                "<list_of_associated_campuses>"
+            ]
+        }
+    """
     newInstitute = apiServices.institutionCreation(institutionInfo.name, institutionInfo.address, institutionInfo.campuses)
     if not newInstitute:
         raise HTTPException(status_code=404, detail="Failed to create institution!")
