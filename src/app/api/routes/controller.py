@@ -6,6 +6,8 @@ from typing import List
 
 app = FastAPI()
 
+apiServices = businessServices()
+
 class newUser(BaseModel):
     name: str = Body(default=..., alias="user_name")
     email: str = Body(default=..., alias="user_email")
@@ -31,11 +33,19 @@ class newBuilding(BaseModel):
 
 @app.post("/app/institutions")
 async def newInstitution(institutionInfo: newInstitution):
-    newInstitute = businessServices.institutionCreation(name=institutionInfo.name, address=institutionInfo.address,
-                                                campuses=institutionInfo.campuses)
+    newInstitute = apiServices.institutionCreation(institutionInfo.name, institutionInfo.address, institutionInfo.campuses)
     if not newInstitute:
         raise HTTPException(status_code=404, detail="Failed to create institution!")
-    return {"message": "Institution Created Successfully"}
+    return newInstitute
+
+
+@app.get("/app/institutions/{institution_id}")
+async def getInstitute(institution_id:str):
+    institute = apiServices.getInstitution(institute_id=institution_id)
+    if not institute:
+        raise HTTPException(status_code=404, detail="Institute not found")
+    return institute
+
 
 @app.post("/app/institutions/{institutionId}/buildings")
 async def newBuilding(institutionId:str, buildingInfo: newBuilding):
