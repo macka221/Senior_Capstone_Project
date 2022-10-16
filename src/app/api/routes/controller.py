@@ -32,6 +32,14 @@ class newBuilding(BaseModel):
     consumption: float = Body(default=..., alias="total_energy_consumption")
     manager: str = Body(default=..., alias="building_manager_id")
 
+class Room(BaseModel):
+    length: int = Body(alias="room_length", default=...)
+    width: int = Body(alias="room_width", default=...)
+    height: int = Body(alias="room_height", default=...)
+    space: int = Body(alias="max_occupency", default=...)
+    temp: str = Body(alias="desired_room_temp", default=...)
+
+
 @app.post("/app/institutions", summary="Create a new Institution")
 async def newInstitution(institutionInfo: newInstitution=Body(examples={"Successful Post": c._NEW_INSTITUTION})):
     """
@@ -71,8 +79,8 @@ async def newBuilding(institutionId:str, buildingInfo: newBuilding):
         raise HTTPException(status_code=404, detail="Failed to create the building!")
     return {"message": "Building Successfully Created"}
 
-# TODO: Create endpoints for adding room information and campus information.
-@app.post("/app/institutions/{institutionId}/users")
+
+@app.post("/app/institutions/{institutionId}/users", summary="Creates a new user")
 async def createNewUser(userInfo: newUser, institutionId: str):
     newUser = businessServices.userCreation(institution=institutionId, name=userInfo.name, email=userInfo.email,
                                     manager=userInfo.manager)
@@ -80,3 +88,27 @@ async def createNewUser(userInfo: newUser, institutionId: str):
         raise HTTPException(status_code=404, detail="Failed to create user!")
     return {"message": "User created Successfully"}
 
+
+@app.post("/institutions/{institution_id}/campuses/{campus_id}/buildings/{building_id}/rooms", summary="Creates a new room")
+async def addRoomInformation(institution_id, campus_id, building_id, room:Room):
+    pass
+
+
+@app.get("/institutions/{institution_id}/campuses/{campus_id}/buildings/{building_id}/rooms", summary="Get all rooms associated with a buidling")
+async def getAllRoomsInformation(institution_id:str, campus_id:str, building_id:str):
+    pass
+
+
+@app.get("/institutions/{institution_id}/campuses/{campus_id}/buildings/{building_id}/rooms/{room_id}", summary="Get specific room information")
+async def getRoomInfo(institution_id:str, campus_id:str, building_id:str, room_id:str):
+    pass
+
+
+@app.get("/institutions/{institution_id}/users", summary="Get all user information")
+async def getAllUsers(institution_id:str):
+    pass
+
+
+@app.get("/institutions/{institution_id}/users/{user_id}", summary="Get user information")
+async def getUserInfo(institution_id:str, user_id:str):
+    pass
