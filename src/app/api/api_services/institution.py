@@ -21,6 +21,12 @@ def addCampus(institution):
 def getCampuses(institution):
     return institution.campuses
 
+def getCampus(institution, campus_id):
+    for campus in institution.campuses:
+        if campus.campus_id == campus_id:
+            return campus
+    return None
+
 def getName(institution):
     return institution.name
 

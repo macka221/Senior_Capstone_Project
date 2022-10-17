@@ -33,3 +33,11 @@ class campus:
         for item in self.buildings:
             item.setCampus(self.campus_id)
 
+def getBuildings(campus):
+    return campus.buildings
+
+def getBuilding(campus, building_id):
+    for building in campus.buildings:
+        if building.building_id == building_id:
+            return building
+    return None

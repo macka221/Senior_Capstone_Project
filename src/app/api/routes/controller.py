@@ -19,6 +19,11 @@ class newInstitution(BaseModel):
     address: str = Body(default=..., alias="institution_address")
     campuses: List = Body(exclude_unset=True, alias="associated_campuses")
 
+class newCampus(BaseModel):
+    name: str = Body(default=..., alias="campus_name")
+    address: str = Body(default=..., alias="campus_address")
+    buildings: List = Body(exclude_unset=True, alias="associated_buildings")
+
 class provider(BaseModel):
     name: str = Body(default=..., alias="provider_name")
     rate: float = Body(default=...)
@@ -112,3 +117,55 @@ async def getAllUsers(institution_id:str):
 @app.get("/institutions/{institution_id}/users/{user_id}", summary="Get user information")
 async def getUserInfo(institution_id:str, user_id:str):
     pass
+
+@app.post("/institutions/{institution_id}/campuses", summary="Creates a new campus")
+async def createNewCampus(campusInfo: newCampus=Body(examples={"Successful Post": c._NEW_CAMPUS})):
+    newCampus = apiServices.campusCreation(campusInfo.name, campusInfo.address,
+                                                   campusInfo.buildings)
+    if not newCampus:
+        raise HTTPException(status_code=404, detail="Failed to create campus!")
+    return newCampus
+
+@app.get("/institutions/{institution_id}/campuses/{campus_id}", summary="Gets a single campus information")
+async def getCampus(institution_id:str, campus_id:str):
+    institution = apiServices.getInstitution(institution_id=institution_id)
+    campus = apiServices.getCampus(institute=institution, campus_id=campus_id)
+    if not campus:
+        raise HTTPException(status_code=404, detail="Campus not found")
+    return campus
+
+@app.get("/institutions/{institution_id}/campuses", summary="gets all campuses associated with an institution")
+async def getAllCampuses(institution_id:str):
+    institution = apiServices.getInstitution(institution_id=institution_id)
+    if not institution:
+        raise HTTPException(status_code=404, detail="Institution not found")
+    campuses = apiServices.getCampuses(instituttion=institution)
+    if not campuses:
+        raise HTTPException(status_code=404, detail="No campuses found")
+    return campuses
+
+@app.get("/institutions/{institution_id}/campuses/{campus_id}/buildings", summary="gets all buildings associated with a campus")
+async def geAllBuildings(institution_id:str, campus_id:str):
+    institution = apiServices.getInstitution(institution_id=institution_id)
+    if not institution:
+        raise HTTPException(status_code=404, detail="Institution not found")
+    campus = apiServices.getCampus(institute=institution, campus_id=campus_id)
+    if not campus:
+        raise HTTPException(status_code=404, detail="Campus not found")
+    buildings = apiServices.getBuildings(campus=campus)
+    if not buildings:
+        raise HTTPException(status_code=404, detail="No buildings found")
+    return buildings
+
+@app.get("/institutions/{institution_id}/campuses/{campus_id}/buildings/{building_id}", summary="gets a specific buildings information")
+async def getBuilding(institution_id:str, campus_id:str, building_id):
+    institution = apiServices.getInstitution(institution_id=institution_id)
+    if not institution:
+        raise HTTPException(status_code=404, detail="Institution not found")
+    campus = apiServices.getCampus(institute=institution, campus_id=campus_id)
+    if not campus:
+        raise HTTPException(status_code=404, detail="Campus not found")
+    building = apiServices.building(campus=campus, building_id=building_id)
+    if not building:
+        raise HTTPException(status_code=404, detail="Building not found")
+    return building
