@@ -21,3 +21,19 @@ _NEW_INSTITUTION = {
             ]
         }
     }
+
+_NEW_CAMPUS = {
+        "summary": "A successful post for a new campus",
+        "description": """A successful post should contain the institution name, address and associated campuses. Each field explained:\n
+        - campus_name: the name of the campus\n
+        - campus_address: the main address for the campus\n
+        - associated_buildings: a list of the associated buildings\n
+        """,
+        "value": {
+            "campus_name": "Morehouse College",
+            "campus_address": "830 Westview Dr SW Atlanta, GA, 30354",
+            "associated_buildings": [
+                "Morehouse College"
+            ]
+        }
+    }
