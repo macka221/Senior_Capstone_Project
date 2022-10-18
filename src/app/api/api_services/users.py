@@ -22,78 +22,42 @@
 # TRUE while LOGGED IN and 
 # FALSE while LOGGED OUT
 #
+import uuid
 
-
-class user:
-    def __init__(self, first_name, last_name, username, email, password, institution, campuses, validated, read_permissions, write_permissions, verification_type):
-        self.first_name = first_name
-        self.last_name = last_name
-        self.username = username
+class credentials:
+    def __init__(self, email:str, password:str):
         self.email = email
         self.password = password
-        self.institution = institution
-        self.campuses = campuses
-        self.validated = validated
-        self.read_permissions = read_permissions
-        self.write_permissions = write_permissions
+
+class user:
+    def __init__(self, name:tuple, login:credentials, institution_id,  verification_type):
+        self.first_name = name[0]
+        self.last_name = name[1]
+        self.email = login.email
+        self.__password = login.password
+        self.institution = institution_id
+        self.validated = False
+        self.permissions = ['read_permissions']
         self.verification_type = verification_type
+        self.userId = None
 
-    def setFirstName(self, first_name):
-        self.first_name = first_name
-
-    def getFirstName(self):
-        return self.first_name
-
-    def setLastName(self, last_name):
-        self.last_name = last_name
-
-    def getLastName(self):
-        return self.last_name
-
-    def setemail(self, email):
-        self.email = email
+    def setUserId(self):
+        self.userId = self.institution + f'-u-{str(uuid.uuid4())[:6]}'
+    
+    def getname(self):
+        return self.first_name + ' ' + self.last_name
 
     def getEmail(self):
         return self.email
 
-    def setPassword(self, password):
-        self.password = password
-
-    def getPassword(self):
-        return self.password
-
-    def setInstitution(self, institution):
-        self.institution = institution
-
-    def getInstitution(self):
-        return self.institution
-
-    def addCampus(self, campus):
-        self.campuses.append(campus)
-
-    def getCampus(self, i):
-        return self.campus[i]
-
-    def getCampuses(self):
-        return self.campuses
-
-    def setValidated(self, validated):
-        self.campus = validated
+    def setValidated(self):
+        self.validated = not self.validated
 
     def getValidated(self):
         return self.validated
 
-    def setReadPermissions(self, read_permissions):
-        self.campus = read_permissions
-
-    def getReadPermissions(self):
-        return self.read_permissions
-
-    def setWritePermissions(self, write_permissions):
-        self.campus = write_permissions
-
-    def getWritePermissions(self):
-        return self.write_permissions
+    def getPermissions(self):
+        return self.permissions
 
     def setVerificationType(self, verification_type):
         self.verification_type = verification_type
@@ -103,78 +67,32 @@ class user:
 
 
 
-class admin:
-    def __init__(self, username, pin, institute, campuses):
-        self.username = username
-        self.pin = pin
-        self.institute = institute
-        self.campuses= campuses
+class admin(user):
+    def __init__(self, pin):
+        self.__pin = pin
+        self.permissions.append('write_permissions')
+        self.permissions.append('elevate_permissions(admin)')
 
-    def setUsername(self, username):
-        self.username = username
-
-    def getUsername(self):
-        return self.username
+    def getEmail(self):
+        return self.email
 
     def setPin(self, pin):
-        self.pin = pin
-
-    def getPin(self):
-        return self.pin
-
-    def setInstitute(self, institute):
-        self.institute = institute
-
-    def getInstitute(self):
-        return self.institute
-
-    def addCampus(self, campus):
-        self.campuses.append(campus)
-
-    def getCampus(self, i):
-        return self.campus[i]
-
-    def getCampuses(self):
-        return self.campuses
+        self.__pin = pin
 
 
+class superuser(user):
+    def __init__(self, pin):
+        self.__pin = pin
+        self.permissions.append('write_permissions(super)')
+        self.permissions.append('elevate_permissions(super)')
 
-class superuser:
-    def __init__(self, username, pin, institutes, campuses):
-        self.username = username
-        self.pin = pin
-        self.institutes = institutes
-        self.campuses = campuses
-
-    def setUsername(self, username):
-        self.username = username
-
-    def getUsername(self):
-        return self.username
+    def getemail(self):
+        return self.email
 
     def setPin(self, pin):
-        self.pin = pin
+        self.__pin = pin
 
-    def getPin(self):
-        return self.pin
 
-    def addInstitute(self, institute):
-        self.institutes.append(institute)
-
-    def getInstitute(self, i):
-        return self.institutes[i]
-
-    def getInstitutes(self):
-        return self.institutes
-
-    def addCampus(self, campus):
-        self.campuses.append(campus)
-
-    def getCampus(self, i):
-        return self.campus[i]
-
-    def getCampuses(self):
-        return self.campuses
-
+users = admins = superUsers = []
 
 

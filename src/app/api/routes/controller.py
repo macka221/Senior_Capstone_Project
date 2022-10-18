@@ -2,17 +2,21 @@ from fastapi import FastAPI, HTTPException, Body
 from starlette.responses import Response
 from pydantic import BaseModel
 from app.api.downstreamServices.downstreamService import businessServices
-from typing import List
+from typing import List, Union
 import app.api.routes.constants as c
 
 app = FastAPI()
 
 apiServices = businessServices()
 
+
 class newUser(BaseModel):
-    name: str = Body(default=..., alias="user_name")
+    first_name: str = Body(default=...)
+    last_name: str = Body(default=...)
     email: str = Body(default=..., alias="user_email")
-    manager: bool = Body(default=False, alias="building_manager")
+    password: str = Body(default=..., alias="user_password")
+    verification_type:str = Body(default='basic')
+    pin:int = Body(exclude_unset=True)
 
 class newInstitution(BaseModel):
     name: str = Body(default=..., alias="institution_name")
@@ -31,7 +35,7 @@ class provider(BaseModel):
 class newBuilding(BaseModel):
     name:str = Body(default=..., alias="building_name")
     address: str = Body(default=..., alias="building_address")
-    rooms: List[str] = Body(exclude_unset=True)
+    rooms: Union[List[str], None] = Body(default=None, exclude_unset=True)
     prov: provider = Body(default=..., alias="provider")
     cost: float = Body(default=..., alias="cost_for_month")
     consumption: float = Body(default=..., alias="total_energy_consumption")
@@ -77,7 +81,7 @@ async def getInstitute(institution_id:str):
 
 @app.post("/app/institutions/{institutionId}/buildings")
 async def newBuilding(institutionId:str, buildingInfo: newBuilding):
-    building = businessServices.buildingCreation(instituteId=institutionId, name=buildingInfo.name, address=buildingInfo.address,
+    building = apiServices.buildingCreation(instituteId=institutionId, name=buildingInfo.name, address=buildingInfo.address,
                                          rooms=buildingInfo.rooms, provider=buildingInfo.prov, cost=buildingInfo.cost,
                                          consumption=buildingInfo.consumption, manager=buildingInfo.manager)
     if not building:
@@ -85,13 +89,17 @@ async def newBuilding(institutionId:str, buildingInfo: newBuilding):
     return {"message": "Building Successfully Created"}
 
 
-@app.post("/app/institutions/{institutionId}/users", summary="Creates a new user")
-async def createNewUser(userInfo: newUser, institutionId: str):
-    newUser = businessServices.userCreation(institution=institutionId, name=userInfo.name, email=userInfo.email,
-                                    manager=userInfo.manager)
+@app.post("/app/institutions/{institution_id}/users", summary="Creates a new user")
+async def createNewUser(userInfo: newUser, institution_id: str):
+    if userInfo.pin:
+        newUser = apiServices.userCreation(institute=institution_id, name=(userInfo.first_name, userInfo.last_name),
+                            email=userInfo.email, password=userInfo.password, pin=userInfo.pin)
+    else:
+        newUser = apiServices.userCreation(institute=institution_id, name=(userInfo.first_name, userInfo.last_name),
+                            email=userInfo.email, password=userInfo.password)
     if not newUser:
         raise HTTPException(status_code=404, detail="Failed to create user!")
-    return {"message": "User created Successfully"}
+    return newUser
 
 
 @app.post("/institutions/{institution_id}/campuses/{campus_id}/buildings/{building_id}/rooms", summary="Creates a new room")

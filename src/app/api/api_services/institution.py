@@ -125,4 +125,26 @@ def getInstitute_from_Institutes(institute_id):
         return {"institution_name": found.name, "institution_address": found.address,
                 "associated_campuses":found.campuses}
 
+def createUser(name:tuple, email, password, institute_id, verificationType='basic', pin=None):
+    login = usImport.credentials(email=email, password=password)
+    institution_index = __findInstitute(institute_id)
+    if institution_index != -1:
+        if pin:
+            newUser = usImport.admin(name=name, login=login, institution_id=institute_id,
+                                     verification_type=verificationType, pin=pin)
+            newUser.setUserId()
+            institutions[institution_index].admins.append(newUser.userId)
+        else:
+            newUser = usImport.user(name=name, login=login, institution_id=institute_id, 
+                                    verification_type=verificationType)
+            newUser.setUserId()
+            institutions[institution_index].users.append(newUser.userId)
+        return {'user_id': newUser.userId, 'name': f"{newUser.first_name} {newUser.last_name}", 
+                'email': newUser.email, 'institution_id': institute_id, 'permissions': newUser.permissions,
+                'validated': newUser.validated}
+    return
+
+
+
+
 
