@@ -119,9 +119,9 @@ async def getUserInfo(institution_id:str, user_id:str):
     pass
 
 @app.post("/institutions/{institution_id}/campuses", summary="Creates a new campus")
-async def createNewCampus(campusInfo: newCampus=Body(examples={"Successful Post": c._NEW_CAMPUS})):
+async def createNewCampus(institution_id,campusInfo: newCampus=Body(examples={"Successful Post": c._NEW_CAMPUS})):
     newCampus = apiServices.campusCreation(campusInfo.name, campusInfo.address,
-                                                   campusInfo.buildings)
+                                                   campusInfo.buildings, institution_id)
     if not newCampus:
         raise HTTPException(status_code=404, detail="Failed to create campus!")
     return newCampus
@@ -145,7 +145,7 @@ async def getAllCampuses(institution_id:str):
     return campuses
 
 @app.get("/institutions/{institution_id}/campuses/{campus_id}/buildings", summary="gets all buildings associated with a campus")
-async def geAllBuildings(institution_id:str, campus_id:str):
+async def getAllBuildings(institution_id:str, campus_id:str):
     institution = apiServices.getInstitution(institution_id=institution_id)
     if not institution:
         raise HTTPException(status_code=404, detail="Institution not found")
