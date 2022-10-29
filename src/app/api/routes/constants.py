@@ -17,7 +17,10 @@ _NEW_INSTITUTION = {
             "institution_name": "Morehouse College",
             "institution_address": "830 Westview Dr SW Atlanta, GA, 30354",
             "associated_campuses": [
-                "Morehouse College"
+                {
+                    "campus_name": "Morehouse College Main Campus",
+                    "campus_address": "830 Westview Dr, SW Atlanta, GA, 30354"
+                }
             ]
         }
     }
@@ -30,7 +33,7 @@ _NEW_CAMPUS = {
         - associated_buildings: a list of the associated buildings\n
         """,
         "value": {
-            "campus_name": "Morehouse College",
+            "campus_name": "Morehouse College Main Campus",
             "campus_address": "830 Westview Dr SW Atlanta, GA, 30354",
             "associated_buildings": [
                 "Morehouse College"

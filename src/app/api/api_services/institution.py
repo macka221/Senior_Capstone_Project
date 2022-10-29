@@ -4,9 +4,16 @@ from app.api.api_services.campus import campus
 import app.api.api_services.users as usImport
 
 class institution:
-    def __init__(self, address:str, campuses:Union[List[campus], None], name:str):
+    def __init__(self, address:str, campuses: Union[List, None], name:str):
+        """
+        Institution class object.
+            :param address: address of the institution
+            :param campuses: list of campus information that will be created at the time of creation
+            :param name: name of the institution
+        """
         self.address = address
-        self.campuses = campuses
+        self.campuses = [campus(name=camp.campus_name, address=camp.campus_address, buildings=None) for camp
+                         in campuses]
         self.name = name
         if ' ' in self.name:
             secondLetter = self.name.find(' ') + 1 if self.name.find(' ') != len(name) - 1 else 1
@@ -17,7 +24,17 @@ class institution:
         self.id = str(unique_id(org_name=self.orgTag))
         self.users = []
         self.admins = []
+        self.total_campuses = len(self.campuses)
 
+        if self.campuses:
+            self.__campusDefaultSets()
+
+    def __campusDefaultSets(self):
+        i = 1
+        for campus in self.campuses:
+            campus.setInstitution(self.id)
+            campus.setCampus_id(i)
+            i += 1
     def setAdmin(self, user_id):
         if user_id not in self.admins:
             self.admins.append(user_id)
@@ -28,7 +45,7 @@ class institution:
         self.users.append(user_id)
 
 providers = []
-
+institutions = []
 
 def _find_campus(institute:institution, campus_id:str):
     if institute.campuses:

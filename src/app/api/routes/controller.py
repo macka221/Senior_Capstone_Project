@@ -18,10 +18,14 @@ class newUser(BaseModel):
     verification_type:str = Body(default='basic')
     pin:int = Body(exclude_unset=True)
 
+class campusInfoBasic(BaseModel):
+    campus_name: str = Body(default=...)
+    campus_address: str = Body(default=...)
+
 class newInstitution(BaseModel):
     name: str = Body(default=..., alias="institution_name")
     address: str = Body(default=..., alias="institution_address")
-    campuses: List = Body(exclude_unset=True, alias="associated_campuses")
+    campuses: List[Union[campusInfoBasic, None]] = Body(default=[None], exclude_unset=True, alias="associated_campuses")
 
 class newCampus(BaseModel):
     name: str = Body(default=..., alias="campus_name")
@@ -61,7 +65,10 @@ async def newInstitution(institutionInfo: newInstitution=Body(examples={"Success
             "institution_name": "<name_of_organization>",
             "institution_address": "<address_of_org>",
             "associated_campuses": [
-                "<list_of_associated_campuses>"
+                {
+                    "campus_name": "<campus_name>"
+                    "campus_address": "<campus_address>"
+                }
             ]
         }
     """
