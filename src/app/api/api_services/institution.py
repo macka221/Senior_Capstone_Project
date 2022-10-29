@@ -13,7 +13,7 @@ class institution:
         """
         self.address = address
         self.campuses = [campus(name=camp.campus_name, address=camp.campus_address, buildings=None) for camp
-                         in campuses]
+                         in campuses] if campuses != [None] else []
         self.name = name
         if ' ' in self.name:
             secondLetter = self.name.find(' ') + 1 if self.name.find(' ') != len(name) - 1 else 1
