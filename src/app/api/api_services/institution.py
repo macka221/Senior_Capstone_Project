@@ -8,17 +8,25 @@ class institution:
         self.address = address
         self.campuses = campuses
         self.name = name
-        self.id = str(unique_id(org_name=self.name.lower(), special_tag=""))
+        if ' ' in self.name:
+            secondLetter = self.name.find(' ') + 1 if self.name.find(' ') != len(name) - 1 else 1
+            self.orgTag = name[0] + self.name[secondLetter]
+        else:
+            self.orgTag = name[:2]
+
+        self.id = str(unique_id(org_name=self.orgTag))
         self.users = []
         self.admins = []
 
     def setAdmin(self, user_id):
-        self.admins.append(user_id)
+        if user_id not in self.admins:
+            self.admins.append(user_id)
+            if user_id in self.users:
+                self.users.remove(user_id)
 
     def setUser(self, user_id):
         self.users.append(user_id)
 
-institutions = []
 providers = []
 
 
