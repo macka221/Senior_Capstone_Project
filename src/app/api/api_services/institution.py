@@ -35,6 +35,12 @@ class institution:
             campus.setInstitution(self.id)
             campus.setCampus_id(i)
             i += 1
+
+    def addCampus(self, camp:campus):
+        camp.setInstitution(self.id)
+        self.total_campuses += 1
+        camp.setCampus_id(self.total_campuses)
+        self.campuses.append(camp)
     def setAdmin(self, user_id):
         if user_id not in self.admins:
             self.admins.append(user_id)
@@ -119,7 +125,7 @@ def createNewCampus(name, address, buildings, institution_id):
         newCampus = campus(name=name, buildings=buildings, address=address)
         institution = __findInstitute(institution_id)
         if institution != -1:
-            institutions[institution].campuses.append(newCampus)
+            institutions[institution].addCampus(newCampus)
             return {"campus_name": name, "campus_address": address,
                     "associated_buildings": buildings, "campus_Id": newCampus.campus_id}
     return
@@ -160,11 +166,11 @@ def createUser(name:tuple, email, password, institute_id, verificationType='basi
             newUser.setUserId()
             institutions[institution_index].admins.append(newUser.userId)
         else:
-            newUser = usImport.user(name=name, login=login, institution_id=institute_id, 
+            newUser = usImport.user(name=name, login=login, institution_id=institute_id,
                                     verification_type=verificationType)
             newUser.setUserId()
             institutions[institution_index].users.append(newUser.userId)
-        return {'user_id': newUser.userId, 'name': f"{newUser.first_name} {newUser.last_name}", 
+        return {'user_id': newUser.userId, 'name': f"{newUser.first_name} {newUser.last_name}",
                 'email': newUser.email, 'institution_id': institute_id, 'permissions': newUser.permissions,
                 'validated': newUser.validated}
     return

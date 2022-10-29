@@ -16,7 +16,7 @@ class newUser(BaseModel):
     email: str = Body(default=..., alias="user_email")
     password: str = Body(default=..., alias="user_password")
     verification_type:str = Body(default='basic')
-    pin:int = Body(exclude_unset=True)
+    pin:Union[int, None] = Body(default=None, exclude_unset=True)
 
 class campusInfoBasic(BaseModel):
     campus_name: str = Body(default=...)
@@ -85,7 +85,7 @@ async def createNewCampus(institution_id,campusInfo: newCampus=Body(examples={"S
         raise HTTPException(status_code=404, detail="Failed to create campus!")
     return newCampus
 
-@app.get("/app/institutions/{institution_id}")
+@app.get("/app/institutions/{institution_id}", summary="Get institution information")
 async def getInstitute(institution_id:str):
     institute = apiServices.getInstitution(institute_id=institution_id)
     if not institute:
@@ -105,12 +105,8 @@ async def newBuilding(institutionId:str, buildingInfo: newBuilding):
 
 @app.post("/app/institutions/{institution_id}/users", summary="Creates a new user")
 async def createNewUser(userInfo: newUser, institution_id: str):
-    if userInfo.pin:
-        newUser = apiServices.userCreation(institute=institution_id, name=(userInfo.first_name, userInfo.last_name),
-                            email=userInfo.email, password=userInfo.password, pin=userInfo.pin)
-    else:
-        newUser = apiServices.userCreation(institute=institution_id, name=(userInfo.first_name, userInfo.last_name),
-                            email=userInfo.email, password=userInfo.password)
+    newUser = apiServices.userCreation(institute=institution_id, name=(userInfo.first_name, userInfo.last_name),
+                        email=userInfo.email, password=userInfo.password, pin=userInfo.pin)
     if not newUser:
         raise HTTPException(status_code=404, detail="Failed to create user!")
     return newUser

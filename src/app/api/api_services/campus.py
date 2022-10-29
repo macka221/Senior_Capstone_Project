@@ -27,7 +27,7 @@ class campus:
         self.institution = institution_id
 
     def setCampus_id(self, campus_number:int):
-        self.campus_id = self.institution + f"-n-{self.name.lower()}-{campus_number}"
+        self.campus_id = self.institution + f"-C-{''.join(self.name.split()).lower()[:5]}-{campus_number}"
 
     def assignBuildings(self):
         for item in self.buildings:
@@ -40,4 +40,4 @@ def getBuilding(campus, building_id):
     for building in campus.buildings:
         if building.building_id == building_id:
             return building
-    return None
+    return
