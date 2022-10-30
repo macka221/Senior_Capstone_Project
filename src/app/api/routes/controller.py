@@ -36,21 +36,22 @@ class provider(BaseModel):
     name: str = Body(default=..., alias="provider_name")
     rate: float = Body(default=...)
 
-class newBuilding(BaseModel):
-    name:str = Body(default=..., alias="building_name")
-    address: str = Body(default=..., alias="building_address")
-    rooms: Union[List[str], None] = Body(default=None, exclude_unset=True)
-    prov: provider = Body(default=..., alias="provider")
-    cost: float = Body(default=..., alias="cost_for_month")
-    consumption: float = Body(default=..., alias="total_energy_consumption")
-    manager: str = Body(default=..., alias="building_manager_id")
-
 class Room(BaseModel):
     length: int = Body(alias="room_length", default=...)
     width: int = Body(alias="room_width", default=...)
     height: int = Body(alias="room_height", default=...)
-    space: int = Body(alias="max_occupency", default=...)
+    space: int = Body(alias="max_occupancy", default=...)
     temp: str = Body(alias="desired_room_temp", default=...)
+    number: int = Body(alias="room_number", default=...)
+
+class newBuilding(BaseModel):
+    name:str = Body(default=..., alias="building_name")
+    address: str = Body(default=..., alias="building_address")
+    rooms: Union[List[Room], List[None]] = Body(default=[None], exclude_unset=True)
+    consumption: float = Body(default=..., alias="total_energy_consumption")
+    manager: str = Body(default=..., alias="building_manager_id")
+
+
 
 
 @app.post("/app/institutions", summary="Create a new Institution")
@@ -93,14 +94,15 @@ async def getInstitute(institution_id:str):
     return institute
 
 
-@app.post("/app/institutions/{institutionId}/buildings", deprecated=True)
-async def newBuilding(institutionId:str, buildingInfo: newBuilding):
-    building = apiServices.buildingCreation(instituteId=institutionId, name=buildingInfo.name, address=buildingInfo.address,
-                                         rooms=buildingInfo.rooms, provider=buildingInfo.prov, cost=buildingInfo.cost,
-                                         consumption=buildingInfo.consumption, manager=buildingInfo.manager)
+@app.post("/app/institutions/{institution_id}/campus/{campus_id}/buildings",summary="Create a new building")
+async def newBuilding(institution_id:str, campus_id:str, buildingInfo: newBuilding=Body(
+                                examples={"Succesful Post": c._NEW_BUILDINGS})):
+    building = apiServices.buildingCreation(instituteId=institution_id, name=buildingInfo.name, address=buildingInfo.address,
+                                            rooms=buildingInfo.rooms, consumption=buildingInfo.consumption,
+                                            manager=buildingInfo.manager, campus_id=campus_id)
     if not building:
         raise HTTPException(status_code=404, detail="Failed to create the building!")
-    return {"message": "Building Successfully Created"}
+    return building
 
 
 @app.post("/app/institutions/{institution_id}/users", summary="Creates a new user")

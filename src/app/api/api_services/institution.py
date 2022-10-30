@@ -1,7 +1,8 @@
 from app.api.api_services.dependencies.unique_id import unique_id, provider_id
 from typing import List, Union
 from app.api.api_services.campus import campus
-import app.api.api_services.users as usImport
+from app.api.api_services.buildings import building, room
+import app.api.api_services.users as us_import
 
 class institution:
     def __init__(self, address:str, campuses: Union[List, None], name:str):
@@ -105,11 +106,13 @@ def createNewInstitution(name, address, campus):
     :param campus: a list of campuses associated with this institution
     :return: an dictionary object with the confirmed response information
     """
-    if name and address and campus:
+    if name and address:
         newInstitute = institution(name=name, campuses=campus, address=address)
         institutions.append(newInstitute)
+        campuses = [] if not campus else [{"campus_id": camp.campus_id, "campus_name": camp.name,
+                                           "campus_address": camp.address} for camp in newInstitute.campuses]
         return {"institution_name": name, "institution_address": address,
-                "associated_campuses": campus, "institution_Id": newInstitute.id}
+                "associated_campuses": campuses, "institution_Id": newInstitute.id}
     return
 
 def createNewCampus(name, address, buildings, institution_id):
@@ -157,16 +160,16 @@ def getInstitute_from_Institutes(institute_id):
                 "associated_campuses":found.campuses}
 
 def createUser(name:tuple, email, password, institute_id, verificationType='basic', pin=None):
-    login = usImport.credentials(email=email, password=password)
+    login = us_import.credentials(email=email, password=password)
     institution_index = __findInstitute(institute_id)
     if institution_index != -1:
         if pin:
-            newUser = usImport.admin(name=name, login=login, institution_id=institute_id,
+            newUser = us_import.admin(name=name, login=login, institution_id=institute_id,
                                      verification_type=verificationType, pin=pin)
             newUser.setUserId()
             institutions[institution_index].admins.append(newUser.userId)
         else:
-            newUser = usImport.user(name=name, login=login, institution_id=institute_id,
+            newUser = us_import.user(name=name, login=login, institution_id=institute_id,
                                     verification_type=verificationType)
             newUser.setUserId()
             institutions[institution_index].users.append(newUser.userId)
@@ -174,6 +177,28 @@ def createUser(name:tuple, email, password, institute_id, verificationType='basi
                 'email': newUser.email, 'institution_id': institute_id, 'permissions': newUser.permissions,
                 'validated': newUser.validated}
     return
+
+
+def addNewBuilding(institution_id, campus_id, name, address, rooms, manager, consumption):
+    # TODO: Integrate this with the database using the campus_id and the institution_id
+    roomsList = set()
+    if rooms and rooms != [None]:
+        for rm in rooms:
+            rm_i = room(temp=rm.temp, room_number=rm.number, length=rm.length, width=rm.width, max_occupancy=rm.space,
+                        height=rm.height)
+            roomsList.update([rm_i])
+
+    newBuilding = building(name=name, address=address, manager=manager, consumption=consumption, rooms=list(roomsList))
+    newBuilding.setCampus(campus_id)
+    newBuilding.setBuilding_id()
+    newBuilding.assignRooms()
+    nB_rooms = list() if not roomsList else [{"room_id": rm.room_id, "max_occupancy": rm.max_occupancy,
+                                          "desired_temp": rm.desired_temp, "length": rm.length,
+                                          "width": rm.width, "height": rm.height} for rm in roomsList]
+    return {"building_id": newBuilding.building_id, "building_name": newBuilding.name, "manager": newBuilding.manager,
+            "building_address": newBuilding.address, "average_energy_consumption": newBuilding.monthly_energy_consumption,
+            "rooms_list": nB_rooms}
+
 
 
 

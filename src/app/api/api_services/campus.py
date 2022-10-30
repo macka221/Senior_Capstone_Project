@@ -1,8 +1,22 @@
 from app.api.api_services.buildings import building
 from typing import Union, List
 
+class provider:
+    def __init__(self, name:str, rate:float, cost:float):
+        self.rate = rate
+        self.name = provider
+        self.monthly_cost = cost
+
+    def setMonthlyCost(self, cost):
+        self.monthly_costcost = cost
+
+    def getMonthlyCost(self):
+        return self.monthly_cost
+
+
 class campus:
-    def __init__(self, address:str, buildings:Union[List[building], None], name:str):
+    def __init__(self, address:str, buildings:Union[List[building], None],name:str):
+        # TODO: incorporate provider into this class
         self.address = address
         self.buildings = buildings
         self.name = name
