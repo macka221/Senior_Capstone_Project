@@ -160,6 +160,10 @@ def getCampus(institution_id, campus_id):
             return campus
     return None
 
+def getCampuses(institution_id):
+    institution = getInstitute_from_Institutes(institution_id)
+    return institution["associated_campuses"]
+
 def createUser(name:tuple, email, password, institute_id, verificationType='basic', pin=None):
     login = us_import.credentials(email=email, password=password)
     institution_index = __findInstitute(institute_id)

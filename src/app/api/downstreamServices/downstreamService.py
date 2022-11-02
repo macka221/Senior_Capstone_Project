@@ -23,4 +23,7 @@ class businessServices:
     def getCampus(self, institution_id, campus_id):
         return institution.getCampus(institution_id=institution_id, campus_id=campus_id)
 
+    def getCampuses(self, institution_id):
+        return institution.getCampuses(institution_id=institution_id)
+
 
