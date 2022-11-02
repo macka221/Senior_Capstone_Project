@@ -13,8 +13,9 @@ class businessServices:
         return institution.createNewCampus(name=name, address=address, buildings=buildings,
                                                 institution_id=institution_id)
 
-    def buildingCreation(self, instituteId, name, address, rooms, manager, provider, consumption, cost):
-        return True
+    def buildingCreation(self, instituteId, name, address, manager, consumption, campus_id, rooms):
+        return institution.addNewBuilding(institution_id=instituteId, name=name, address=address, rooms=rooms,
+                                          consumption=consumption, manager=manager, campus_id=campus_id)
 
     def getInstitution(self, institute_id):
         return institution.getInstitute_from_Institutes(institute_id=institute_id)
