@@ -1,8 +1,22 @@
 from app.api.api_services.buildings import building
 from typing import Union, List
 
+class provider:
+    def __init__(self, name:str, rate:float, cost:float):
+        self.rate = rate
+        self.name = provider
+        self.monthly_cost = cost
+
+    def setMonthlyCost(self, cost):
+        self.monthly_costcost = cost
+
+    def getMonthlyCost(self):
+        return self.monthly_cost
+
+
 class campus:
-    def __init__(self, address:str, buildings:Union[List[building], None], name:str):
+    def __init__(self, address:str, buildings:Union[List[building], None],name:str):
+        # TODO: incorporate provider into this class
         self.address = address
         self.buildings = buildings
         self.name = name
@@ -27,7 +41,7 @@ class campus:
         self.institution = institution_id
 
     def setCampus_id(self, campus_number:int):
-        self.campus_id = self.institution + f"-n-{self.name.lower()}-{campus_number}"
+        self.campus_id = self.institution + f"-C-{''.join(self.name.split()).lower()[:5]}-{campus_number}"
 
     def assignBuildings(self):
         for item in self.buildings:
@@ -40,4 +54,4 @@ def getBuilding(campus, building_id):
     for building in campus.buildings:
         if building.building_id == building_id:
             return building
-    return None
+    return
