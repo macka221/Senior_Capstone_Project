@@ -18,6 +18,7 @@ def create_institution(institution_id, institution_name, provider_id):
     engine = get_connection()
 
     meta = MetaData()
+    meta.bind = engine
 
     institutions = Table(
         'institutions', meta,
@@ -44,7 +45,7 @@ def create_campus(institution_name, institution_id, campus_id, provider_id, long
 
     camps_of_inst = Table(
         institution_name+'_Campuses', meta,
-        Column('institutionID', String(45), ForeignKey('institutions.institutionID')),
+        Column('institutionID', String(45), ForeignKey('institutions.c.institutionID')),
         Column('campusID', String(45), primary_key=True),
         Column('provider_id', String(45)),
         Column('long', Integer),
