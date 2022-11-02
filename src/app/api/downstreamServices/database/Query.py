@@ -1,11 +1,13 @@
 
 from Creation_Functions import *
 
-create_institution("MO", "Morehouse College", 2, "GP")
+get_connection()
 
-create_campus("Morehouse College", "MO", "MO_MA", "GP", 45.77, 63.44)
+# create_institution("MO", "Morehouse_College", "GP")
 
-create_building("Morehouse College", "MO-MA", "MO-MA-DANS", "Dansby", "830 Westview Dr", 12.11, 98.09, 400.37)
+create_campus("Morehouse_College", "MO", "MO-MA", "GP", 45.77, 63.44)
+
+create_building("Morehouse_College", "MO-MA", "MO-MA-DANS", "Dansby", "830 Westview Dr", 12.11, 98.09, 400.37)
 
 create_room("MO-MA", "MO-MA-DANS", "206", 10, 12, 10, 1200)
 
