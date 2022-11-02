@@ -100,12 +100,26 @@ async def getCampus(institution_id:str, campus_id:str):
         raise HTTPException(status_code=404, detail="Campus not found")
     return campus
 
+@app.get("/institutions/{institution_id}/campuses/{campus_id}/buildings/{building_id}", summary="gets a specific buildings information")
+async def getBuilding(institution_id:str, campus_id:str, building_id):
+    buildings = apiServices.getBuilding(institution_id=institution_id, campus_id=campus_id, building_id=building_id)
+    if not buildings:
+        raise HTTPException(status_code=404, detail="Buildings not found")
+    return buildings
+
 @app.get("/institutions/{institution_id}/campuses", summary="gets all campuses associated with an institution")
 async def getAllCampuses(institution_id:str):
     campuses = apiServices.getCampuses(institution_id=institution_id)
     if not campuses:
         raise HTTPException(status_code=404, detail="Campuses not found")
     return campuses
+
+@app.get("/institutions/{institution_id}/campuses/{campus_id}/buildings", summary="gets all buildings associated with a campus")
+async def getAllBuildings(institution_id:str, campus_id:str):
+    buildings = apiServices.getBuildings(institution_id=institution_id, campus_id=campus_id)
+    if not buildings:
+        raise HTTPException(status_code=404, detail="Buildings not found")
+    return buildings
 
 
 
@@ -152,29 +166,3 @@ async def getAllUsers(institution_id:str):
 @app.get("/institutions/{institution_id}/users/{user_id}", summary="Get user information",deprecated=True)
 async def getUserInfo(institution_id:str, user_id:str):
     pass
-
-@app.get("/institutions/{institution_id}/campuses/{campus_id}/buildings", summary="gets all buildings associated with a campus",deprecated=True)
-async def getAllBuildings(institution_id:str, campus_id:str):
-    institution = apiServices.getInstitution(institution_id=institution_id)
-    if not institution:
-        raise HTTPException(status_code=404, detail="Institution not found")
-    campus = apiServices.getCampus(institute=institution, campus_id=campus_id)
-    if not campus:
-        raise HTTPException(status_code=404, detail="Campus not found")
-    buildings = apiServices.getBuildings(campus=campus)
-    if not buildings:
-        raise HTTPException(status_code=404, detail="No buildings found")
-    return buildings
-
-@app.get("/institutions/{institution_id}/campuses/{campus_id}/buildings/{building_id}", summary="gets a specific buildings information",deprecated=True)
-async def getBuilding(institution_id:str, campus_id:str, building_id):
-    institution = apiServices.getInstitution(institution_id=institution_id)
-    if not institution:
-        raise HTTPException(status_code=404, detail="Institution not found")
-    campus = apiServices.getCampus(institute=institution, campus_id=campus_id)
-    if not campus:
-        raise HTTPException(status_code=404, detail="Campus not found")
-    building = apiServices.building(campus=campus, building_id=building_id)
-    if not building:
-        raise HTTPException(status_code=404, detail="Building not found")
-    return building

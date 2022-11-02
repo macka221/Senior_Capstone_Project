@@ -140,6 +140,13 @@ def __findInstitute(institute_id):
         index = -1
     return index
 
+def __findCampus(institution_id, campus_id):
+    institution = getInstitute_from_Institutes(institution_id)
+    for campus in institution["associated_campuses"]:
+        if campus.campus_id == campus_id:
+            return campus
+    return
+
 
 def getInstitute_from_Institutes(institute_id):
     """
@@ -157,12 +164,30 @@ def getCampus(institution_id, campus_id):
     institution = getInstitute_from_Institutes(institution_id)
     for campus in institution["associated_campuses"]:
         if campus.campus_id == campus_id:
-            return campus
+            return {"campus_name": campus.name, "campus_address": campus.address,
+                    "associated_buildings": campus.buildings, "campus_Id": campus.campus_id}
     return None
 
 def getCampuses(institution_id):
     institution = getInstitute_from_Institutes(institution_id)
-    return institution["associated_campuses"]
+    campuses = []
+    for campus in institution["associated_campuses"]:
+        temp = {"campus_name": campus.name, "campus_address": campus.address,
+            "associated_buildings": campus.buildings, "campus_Id": campus.campus_id}
+        campuses.append(temp)
+    return campuses
+
+def getBuilding(institution_id, campus_id, building_id):
+    campus = getCampus(institution_id, campus_id)
+    for building in campus["associated_buildings"]:
+        if building.building_id == building_id:
+            return building
+    return None
+
+def getBuildings(institution_id, campus_id):
+    campus = getCampus(institution_id, campus_id)
+    print(campus)
+    return campus["associated_buildings"]
 
 def createUser(name:tuple, email, password, institute_id, verificationType='basic', pin=None):
     login = us_import.credentials(email=email, password=password)
