@@ -88,12 +88,6 @@ def addCampus(institution, campus):
 def getCampuses(institution):
     return institution.campuses
 
-def getCampus(institution, campus_id):
-    for campus in institution.campuses:
-        if campus.campus_id == campus_id:
-            return campus
-    return None
-
 def getName(institution):
     return institution.name
 
@@ -158,6 +152,13 @@ def getInstitute_from_Institutes(institute_id):
         found = institutions[institute_index]
         return {"institution_name": found.name, "institution_address": found.address,
                 "associated_campuses":found.campuses}
+
+def getCampus(institution_id, campus_id):
+    institution = getInstitute_from_Institutes(institution_id)
+    for campus in institution["associated_campuses"]:
+        if campus.campus_id == campus_id:
+            return campus
+    return None
 
 def createUser(name:tuple, email, password, institute_id, verificationType='basic', pin=None):
     login = us_import.credentials(email=email, password=password)

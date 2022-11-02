@@ -93,6 +93,14 @@ async def getInstitute(institution_id:str):
         raise HTTPException(status_code=404, detail="Institute not found")
     return institute
 
+@app.get("/institutions/{institution_id}/campuses/{campus_id}", summary="Gets a single campus information")
+async def getCampus(institution_id:str, campus_id:str):
+    campus = apiServices.getCampus(institution_id=institution_id, campus_id=campus_id)
+    if not campus:
+        raise HTTPException(status_code=404, detail="Campus not found")
+    return campus
+
+
 
 @app.post("/app/institutions/{institution_id}/campus/{campus_id}/buildings",summary="Create a new building")
 async def newBuilding(institution_id:str, campus_id:str, buildingInfo: newBuilding=Body(
@@ -137,14 +145,6 @@ async def getAllUsers(institution_id:str):
 @app.get("/institutions/{institution_id}/users/{user_id}", summary="Get user information",deprecated=True)
 async def getUserInfo(institution_id:str, user_id:str):
     pass
-
-@app.get("/institutions/{institution_id}/campuses/{campus_id}", summary="Gets a single campus information",deprecated=True)
-async def getCampus(institution_id:str, campus_id:str):
-    institution = apiServices.getInstitution(institution_id=institution_id)
-    campus = apiServices.getCampus(institute=institution, campus_id=campus_id)
-    if not campus:
-        raise HTTPException(status_code=404, detail="Campus not found")
-    return campus
 
 @app.get("/institutions/{institution_id}/campuses", summary="gets all campuses associated with an institution",deprecated=True)
 async def getAllCampuses(institution_id:str):
