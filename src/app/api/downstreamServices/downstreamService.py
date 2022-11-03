@@ -20,4 +20,8 @@ class businessServices:
     def getInstitution(self, institute_id):
         return institution.getInstitute_from_Institutes(institute_id=institute_id)
 
+    def createNewRoom(self, institution_id, campus_id, building_id, room):
+        return institution.addNewRoom(institution_id=institution_id, campus_id=campus_id, building_id=building_id,
+                                      rm=room)
+
 

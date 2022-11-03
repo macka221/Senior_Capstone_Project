@@ -42,7 +42,7 @@ class user:
         self.userId = None
 
     def setUserId(self):
-        self.userId = self.institution + f'-u-{str(uuid.uuid4())[:6]}'
+        self.userId = self.institution + f'-U-{str(uuid.uuid4())[:6]}'
     
     def getname(self):
         return self.first_name + ' ' + self.last_name
