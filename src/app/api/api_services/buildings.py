@@ -28,7 +28,7 @@ class room:
         self.building = building_id
 
     def setRoom_id(self):
-        self.room_id = self.building + f"-r-{self.room_number}"
+        self.room_id = self.building + f"-R-{self.room_number}"
 
 
 class building:
@@ -57,7 +57,7 @@ class building:
         self.campus_id = campus_id
     
     def setBuilding_id(self):
-        self.building_id = self.campus_id + f"-b-{self.name.lower()[:3]}"
+        self.building_id = self.campus_id + f"-B-{self.name.lower()[:3]}"
     
     def assignRooms(self):
         for item in self.rooms:

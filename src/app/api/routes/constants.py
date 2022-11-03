@@ -76,3 +76,24 @@ _NEW_BUILDINGS = {
         ]
     }
 }
+
+_NEW_ROOM = {
+    "summary": "Successful post of new room",
+    "description": """
+    All of the information below is required. Here is a description of each field.\n
+        - room_length: room's length in feet as an integer (ex. 5ft is just 5)\n
+        - room_width: room's width in feet as an integer (ex. 5ft is just 5)\n
+        - room_height: room's height in feet as an integer (ex. 5ft is just 5)\n
+        - max_occupancy: room's maximum occupancy as an integer\n 
+        - desired_room_temp: the desired room temperature in Celsius (ex. 40C)\n
+        - room_number: the rooms number as an integer (ex. room 215 is just 215)\n
+    """,
+    "value": {
+        "room_length": 10,
+        "room_width": 18,
+        "room_height": 10,
+        "max_occupancy": 12,
+        "desired_room_temp": "72C",
+        "room_number": 312
+    }
+}

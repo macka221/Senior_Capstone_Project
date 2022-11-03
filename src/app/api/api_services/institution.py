@@ -181,24 +181,41 @@ def createUser(name:tuple, email, password, institute_id, verificationType='basi
 
 def addNewBuilding(institution_id, campus_id, name, address, rooms, manager, consumption):
     # TODO: Integrate this with the database using the campus_id and the institution_id
-    roomsList = set()
-    if rooms and rooms != [None]:
-        for rm in rooms:
-            rm_i = room(temp=rm.temp, room_number=rm.number, length=rm.length, width=rm.width, max_occupancy=rm.space,
-                        height=rm.height)
-            roomsList.update([rm_i])
+    institute_index = __findInstitute(institution_id)
+    if name and address and manager and consumption and institute_index != -1:
+        campus = getCampus(institution=institutions[institute_index], campus_id=campus_id)
+        if campus:
+            roomsList = set()
+            if rooms and rooms != [None]:
+                for rm in rooms:
+                    rm_i = room(temp=rm.temp, room_number=rm.number, length=rm.length, width=rm.width, max_occupancy=rm.space,
+                                height=rm.height)
+                    roomsList.update([rm_i])
 
-    newBuilding = building(name=name, address=address, manager=manager, consumption=consumption, rooms=list(roomsList))
-    newBuilding.setCampus(campus_id)
-    newBuilding.setBuilding_id()
-    newBuilding.assignRooms()
-    nB_rooms = list() if not roomsList else [{"room_id": rm.room_id, "max_occupancy": rm.max_occupancy,
-                                          "desired_temp": rm.desired_temp, "length": rm.length,
-                                          "width": rm.width, "height": rm.height} for rm in roomsList]
-    return {"building_id": newBuilding.building_id, "building_name": newBuilding.name, "manager": newBuilding.manager,
-            "building_address": newBuilding.address, "average_energy_consumption": newBuilding.monthly_energy_consumption,
-            "rooms_list": nB_rooms}
+            newBuilding = building(name=name, address=address, manager=manager, consumption=consumption, rooms=list(roomsList))
+            newBuilding.setCampus(campus_id)
+            newBuilding.setBuilding_id()
+            newBuilding.assignRooms()
+            campus.addBuilding(newBuilding)
+            nB_rooms = list() if not roomsList else [{"room_id": rm.room_id, "max_occupancy": rm.max_occupancy,
+                                                  "desired_temp": rm.desired_temp, "length": rm.length,
+                                                  "width": rm.width, "height": rm.height} for rm in roomsList]
+            return {"building_id": newBuilding.building_id, "building_name": newBuilding.name, "manager": newBuilding.manager,
+                    "building_address": newBuilding.address, "average_energy_consumption": newBuilding.monthly_energy_consumption,
+                    "rooms_list": nB_rooms}
+    return
 
+
+def addNewRoom(institution_id, campus_id, building_id, rm):
+    if rm:
+        newRoom = room(temp=rm.temp, length=rm.length, width=rm.width, height=rm.height, max_occupancy=rm.space,
+                       room_number=rm.number)
+        newRoom.setBuilding_id(building_id)
+        newRoom.setRoom_id()
+        return {"room_id": newRoom.room_id, "room_number": newRoom.room_number, "length": newRoom.length,
+                "width": newRoom.width, "height": newRoom.height, "desired_room_temp": newRoom.desired_temp,
+                "max_occupancy": newRoom.max_occupancy}
+    return
 
 
 
