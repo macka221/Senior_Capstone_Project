@@ -140,12 +140,12 @@ def __findInstitute(institute_id):
         index = -1
     return index
 
-def __findCampus(institution_id, campus_id):
-    institution = getInstitute_from_Institutes(institution_id)
-    for campus in institution["associated_campuses"]:
+def __findCampus(institution, campus_id):
+    for campus in institution.campuses:
         if campus.campus_id == campus_id:
             return campus
-    return
+    return None
+
 
 
 def getInstitute_from_Institutes(institute_id):
@@ -213,7 +213,7 @@ def addNewBuilding(institution_id, campus_id, name, address, rooms, manager, con
     # TODO: Integrate this with the database using the campus_id and the institution_id
     institute_index = __findInstitute(institution_id)
     if name and address and manager and consumption and institute_index != -1:
-        campus = getCampus(institution=institutions[institute_index], campus_id=campus_id)
+        campus = __findCampus(institution=institutions[institute_index], campus_id=campus_id)
         if campus:
             roomsList = set()
             if rooms and rooms != [None]:
