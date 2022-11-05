@@ -88,12 +88,6 @@ def addCampus(institution, campus):
 def getCampuses(institution):
     return institution.campuses
 
-def getCampus(institution, campus_id):
-    for campus in institution.campuses:
-        if campus.campus_id == campus_id:
-            return campus
-    return None
-
 def getName(institution):
     return institution.name
 
@@ -146,6 +140,13 @@ def __findInstitute(institute_id):
         index = -1
     return index
 
+def __findCampus(institution, campus_id):
+    for campus in institution.campuses:
+        if campus.campus_id == campus_id:
+            return campus
+    return None
+
+
 
 def getInstitute_from_Institutes(institute_id):
     """
@@ -158,6 +159,35 @@ def getInstitute_from_Institutes(institute_id):
         found = institutions[institute_index]
         return {"institution_name": found.name, "institution_address": found.address,
                 "associated_campuses":found.campuses}
+
+def getCampus(institution_id, campus_id):
+    institution = getInstitute_from_Institutes(institution_id)
+    for campus in institution["associated_campuses"]:
+        if campus.campus_id == campus_id:
+            return {"campus_name": campus.name, "campus_address": campus.address,
+                    "associated_buildings": campus.buildings, "campus_Id": campus.campus_id}
+    return None
+
+def getCampuses(institution_id):
+    institution = getInstitute_from_Institutes(institution_id)
+    campuses = []
+    for campus in institution["associated_campuses"]:
+        temp = {"campus_name": campus.name, "campus_address": campus.address,
+            "associated_buildings": campus.buildings, "campus_Id": campus.campus_id}
+        campuses.append(temp)
+    return campuses
+
+def getBuilding(institution_id, campus_id, building_id):
+    campus = getCampus(institution_id, campus_id)
+    for building in campus["associated_buildings"]:
+        if building.building_id == building_id:
+            return building
+    return None
+
+def getBuildings(institution_id, campus_id):
+    campus = getCampus(institution_id, campus_id)
+    print(campus)
+    return campus["associated_buildings"]
 
 def createUser(name:tuple, email, password, institute_id, verificationType='basic', pin=None):
     login = us_import.credentials(email=email, password=password)
@@ -183,7 +213,7 @@ def addNewBuilding(institution_id, campus_id, name, address, rooms, manager, con
     # TODO: Integrate this with the database using the campus_id and the institution_id
     institute_index = __findInstitute(institution_id)
     if name and address and manager and consumption and institute_index != -1:
-        campus = getCampus(institution=institutions[institute_index], campus_id=campus_id)
+        campus = __findCampus(institution=institutions[institute_index], campus_id=campus_id)
         if campus:
             roomsList = set()
             if rooms and rooms != [None]:

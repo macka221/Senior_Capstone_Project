@@ -18,7 +18,7 @@ class campus:
     def __init__(self, address:str, buildings:Union[List[building], None],name:str):
         # TODO: incorporate provider into this class
         self.address = address
-        self.buildings = buildings
+        self.buildings = buildings if buildings else []
         self.name = name
         self.institution = None
         self.campus_id = None

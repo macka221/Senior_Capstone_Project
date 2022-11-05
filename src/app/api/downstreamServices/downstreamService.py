@@ -20,6 +20,18 @@ class businessServices:
     def getInstitution(self, institute_id):
         return institution.getInstitute_from_Institutes(institute_id=institute_id)
 
+    def getCampus(self, institution_id, campus_id):
+        return institution.getCampus(institution_id=institution_id, campus_id=campus_id)
+
+    def getCampuses(self, institution_id):
+        return institution.getCampuses(institution_id=institution_id)
+
+    def getBuilding(self, institution_id, campus_id, building_id):
+        return institution.getBuilding(institution_id=institution_id, campus_id=campus_id, building_id=building_id)
+
+    def getBuildings(self, institution_id, campus_id):
+        return institution.getBuildings(institution_id=institution_id, campus_id=campus_id)
+
     def createNewRoom(self, institution_id, campus_id, building_id, room):
         return institution.addNewRoom(institution_id=institution_id, campus_id=campus_id, building_id=building_id,
                                       rm=room)
