@@ -1,5 +1,5 @@
 # create institution table
-from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, ARRAY, Float, ForeignKey, Boolean
+from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, ARRAY, Float, ForeignKey, Boolean, ForeignKeyConstraint
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
@@ -47,6 +47,7 @@ def create_campus(institution_name, institution_id, campus_id, provider_id, long
     engine = get_connection()
 
     meta = MetaData()
+    meta.bind = engine
 
     institutions = Table(
         'institutions', meta,
@@ -54,14 +55,16 @@ def create_campus(institution_name, institution_id, campus_id, provider_id, long
         Column('institution_name', String(45)),
         Column('providerID', String(45))
     )
-
     camps_of_inst = Table(
-        institution_name+'_Campuses', meta,
-        Column('institutionID', String(45), ForeignKey(institutions.institutionID)),
+        'campuses', meta,
+        Column('institutionID', String(45)),
         Column('campusID', String(45), primary_key=True),
         Column('provider_id', String(45)),
         Column('long', Float),
         Column('lat', Float),
+        ForeignKeyConstraint(
+            ['institutionID'], ['institutions.institutionID'], name="fk_campus_institutionID"
+        )
     )
     meta.create_all(engine)
 
@@ -75,50 +78,95 @@ def create_campus(institution_name, institution_id, campus_id, provider_id, long
 
     return result
 
-def create_building(institution_name, campus_id, building_id, building_name, building_address, cost_per_day, cost_per_week, cost_per_month):
+def create_building(institution_name, campus_id, building_id, building_name, building_address):
     engine = get_connection()
 
     meta = MetaData()
+    meta.bind = engine
 
+    institutions = Table(
+        'institutions', meta,
+        Column('institutionID', String(45), primary_key=True),
+        Column('institution_name', String(45)),
+        Column('providerID', String(45))
+    )
+    camps_of_inst = Table(
+        'campuses', meta,
+        Column('institutionID', String(45)),
+        Column('campusID', String(45), primary_key=True),
+        Column('provider_id', String(45)),
+        Column('long', Float),
+        Column('lat', Float),
+        ForeignKeyConstraint(
+            ['institutionID'], ['institutions.institutionID'], name="fk_campus_institutionID"
+        )
+    )
     buildings_of_inst = Table(
-        institution_name+' Buildings', meta,
-        Column('campusID', String(45), ForeignKey(institution_name+"_Campuses.campusID")),
+        'buildings', meta,
+        Column('campusID', String(45)),
         Column('buildingID', String(45), primary_key=True),
         Column('building_name', String(45)),
         Column('building_address', String(45)),
-        Column('cost_per_day', ARRAY(Float)),
-        Column('cost_per_week', ARRAY(Float)),
-        Column('cost_per_month', ARRAY(Float))
+        ForeignKeyConstraint(
+            ['campusID'], ['campuses.campusID'], name="fk_building_campusID"
+        )
     )
     meta.create_all(engine)
 
     ins = buildings_of_inst.insert().values(campusID=campus_id,
                                     buildingID=building_id,
                                     building_name=building_name,
-                                    building_address=building_address,
-                                    cost_per_day=cost_per_day,
-                                    cost_per_week=cost_per_week,
-                                    cost_per_month=cost_per_month)
+                                    building_address=building_address)
     conn = engine.connect()
     result = conn.execute(ins)
 
     return result
 
-def create_room(institution_name, campus_id, building_id, room_num, room_id, length, width, height, volume):
+def create_room(building_id, room_num, room_id, length, width, height, volume):
     engine = get_connection()
 
     meta = MetaData()
+    meta.bind = engine
 
+    institutions = Table(
+        'institutions', meta,
+        Column('institutionID', String(45), primary_key=True),
+        Column('institution_name', String(45)),
+        Column('providerID', String(45))
+    )
+    camps_of_inst = Table(
+        'campuses', meta,
+        Column('institutionID', String(45)),
+        Column('campusID', String(45), primary_key=True),
+        Column('provider_id', String(45)),
+        Column('long', Float),
+        Column('lat', Float),
+        ForeignKeyConstraint(
+            ['institutionID'], ['institutions.institutionID'], name="fk_campus_institutionID"
+        )
+    )
+    buildings_of_inst = Table(
+        'buildings', meta,
+        Column('campusID', String(45)),
+        Column('buildingID', String(45), primary_key=True),
+        Column('building_name', String(45)),
+        Column('building_address', String(45)),
+        ForeignKeyConstraint(
+            ['campusID'], ['campuses.campusID'], name="fk_building_campusID"
+        )
+    )
     rooms_in_camp_building = Table(
-        'Rooms on Campus '+campus_id, meta,
-        Column('buildingID', String(45), ForeignKey(institution_name+" Buildings.buildingID")),
+        'rooms', meta,
+        Column('buildingID', String(45)),
         Column('room_num', String(45)),
         Column('roomID', String(45)),
         Column('length', Float),
         Column('width', Float),
         Column('height', Float),
-        Column('volume', Integer)
-
+        Column('volume', Integer),
+        ForeignKeyConstraint(
+            ['buildingID'], ['buildings.buildingID'], name="fk_rooms_buildingID"
+        )
     )
     meta.create_all(engine)
 
@@ -138,17 +186,61 @@ def create_user(user_id, institution_id, first_name, last_name, email, isAdmin, 
     engine = get_connection()
 
     meta = MetaData()
+    meta.bind = engine
 
+    institutions = Table(
+        'institutions', meta,
+        Column('institutionID', String(45), primary_key=True),
+        Column('institution_name', String(45)),
+        Column('providerID', String(45))
+    )
+    camps_of_inst = Table(
+        'campuses', meta,
+        Column('institutionID', String(45)),
+        Column('campusID', String(45), primary_key=True),
+        Column('provider_id', String(45)),
+        Column('long', Float),
+        Column('lat', Float),
+        ForeignKeyConstraint(
+            ['institutionID'], ['institutions.institutionID'], name="fk_campus_institutionID"
+        )
+    )
+    buildings_of_inst = Table(
+        'buildings', meta,
+        Column('campusID', String(45)),
+        Column('buildingID', String(45), primary_key=True),
+        Column('building_name', String(45)),
+        Column('building_address', String(45)),
+        ForeignKeyConstraint(
+            ['campusID'], ['campuses.campusID'], name="fk_building_campusID"
+        )
+    )
+    rooms_in_camp_building = Table(
+        'rooms', meta,
+        Column('buildingID', String(45)),
+        Column('room_num', String(45)),
+        Column('roomID', String(45)),
+        Column('length', Float),
+        Column('width', Float),
+        Column('height', Float),
+        Column('volume', Integer),
+        ForeignKeyConstraint(
+            ['buildingID'], ['buildings.buildingID'], name="fk_rooms_buildingID"
+        )
+    )
     users = Table(
         'users', meta,
         Column('userID', String(45), primary_key=True),
-        Column('institutionID', String(45), ForeignKey("institutions.institutionID")),
+        Column('institutionID', String(45), ),
         Column('first_name', String(45)),
         Column('last_name', String(45)),
         Column('email', String(45)),
         Column('isAdmin', Boolean),
         Column('isSuper', Boolean),
-        Column('admin_pin', Integer)
+        Column('admin_pin', Integer),
+        ForeignKeyConstraint(
+            ['institutionID'], ['institutions.institutionID'], name="fk_users_institutionID"
+        )
 
     )
     meta.create_all(engine)
