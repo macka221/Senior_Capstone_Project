@@ -154,9 +154,12 @@ async def addRoomInformation(institution_id, campus_id, building_id, room:Room =
     return newRoom
 
 
-@app.get("/institutions/{institution_id}/campuses/{campus_id}/buildings/{building_id}/rooms", summary="Get all rooms associated with a buidling",deprecated=True)
+@app.get("/institutions/{institution_id}/campuses/{campus_id}/buildings/{building_id}/rooms", summary="Get all rooms associated with a buidling")
 async def getAllRoomsInformation(institution_id:str, campus_id:str, building_id:str):
-    pass
+    building_rooms = apiServices.get_all_rooms(institution_id, campus_id, building_id)
+    if not building_rooms:
+        raise HTTPException(status_code=404, detail="Building not found")
+    return building_rooms
 
 
 @app.get("/institutions/{institution_id}/campuses/{campus_id}/buildings/{building_id}/rooms/{room_id}", summary="Get specific room information",deprecated=True)

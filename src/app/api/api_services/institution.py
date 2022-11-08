@@ -247,7 +247,8 @@ def addNewRoom(institution_id, campus_id, building_id, rm):
                 "max_occupancy": newRoom.max_occupancy}
     return
 
-
+def get_allroom_information(institutionId, campusId, buildingId):
+    pass
 
 
 
