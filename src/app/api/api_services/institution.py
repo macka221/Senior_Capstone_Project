@@ -146,6 +146,15 @@ def __findCampus(institution, campus_id):
             return campus
     return None
 
+def getLongitude(institution_id, campus_id):
+    institute_index = __findInstitute(institution_id)
+    campus = __findCampus(institution=institutions[institute_index], campus_id=campus_id)
+    return campus.getLong()
+
+def getLatitude(institution_id, campus_id):
+    institute_index = __findInstitute(institution_id)
+    campus = __findCampus(institution=institutions[institute_index], campus_id=campus_id)
+    return campus.getLat()
 
 
 def getInstitute_from_Institutes(institute_id):

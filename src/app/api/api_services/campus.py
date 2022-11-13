@@ -15,7 +15,7 @@ class provider:
 
 
 class campus:
-    def __init__(self, address:str, buildings:Union[List[building], None],name:str):
+    def __init__(self, address:str, buildings:Union[List[building], None],name:str, long:float, lat:float):
         # TODO: incorporate provider into this class
         self.address = address
         self.buildings = buildings if buildings else []
@@ -23,6 +23,8 @@ class campus:
         self.institution = None
         self.campus_id = None
         self.buildingNumber = len(buildings) if buildings else 0
+        self.long = long
+        self.lat = lat
 
     def getAddress(self):
         return self.address
@@ -46,6 +48,12 @@ class campus:
     def assignBuildings(self):
         for item in self.buildings:
             item.setCampus(self.campus_id)
+
+    def getLong(self):
+        return self.long
+
+    def getLat(self):
+        return self.lat
 
 def getBuildings(campus):
     return campus.buildings

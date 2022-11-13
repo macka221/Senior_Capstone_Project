@@ -1,4 +1,6 @@
 from app.api.api_services import institution
+from app.api.api_services import campus
+from app.api.api_services import energy
 
 
 class businessServices:
@@ -35,5 +37,9 @@ class businessServices:
     def createNewRoom(self, institution_id, campus_id, building_id, room):
         return institution.addNewRoom(institution_id=institution_id, campus_id=campus_id, building_id=building_id,
                                       rm=room)
-
+    def calculateEnergyCostBuildingPerDay(self, institution_id, campus_id, building_id):
+        long = institution.getLongitude(institution_id=institution_id, campus_id=campus_id)
+        lat = institution.getLatitude(institution_id=institution_id, campus_id=campus_id)
+        building = institution.getBuilding(institution_id, campus_id, building_id)
+        return energy.calculateEnergyCostBuildingPerDay(building, long, lat)
 
