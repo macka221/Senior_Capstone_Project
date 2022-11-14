@@ -1,5 +1,7 @@
 from app.api.api_services.buildings import building
 from typing import Union, List
+import requests
+import urllib.parse
 
 class provider:
     def __init__(self, name:str, rate:float, cost:float):
@@ -23,6 +25,14 @@ class campus:
         self.institution = None
         self.campus_id = None
         self.buildingNumber = len(buildings) if buildings else 0
+        self.prov = "Deprecated"
+
+        self.__setLonLat()
+
+    def __setLonLat(self):
+        q_address = urllib.parse.quote(self.address)
+        resp = requests.get(f'https://nominatim.openstreetmap.org/search/{q_address}?format=json')
+        self.lat, self.lon = float(resp.json()[0]['lat']), float(resp.json()[0]['lon'])
 
     def getAddress(self):
         return self.address

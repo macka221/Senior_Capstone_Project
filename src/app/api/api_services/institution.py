@@ -3,16 +3,16 @@ from typing import List, Union
 from app.api.api_services.campus import campus
 from app.api.api_services.buildings import building, room
 import app.api.api_services.users as us_import
+import app.api.downstreamServices.database.Creation_Functions as cf
 
 class institution:
-    def __init__(self, address:str, campuses: Union[List, None], name:str):
+    def __init__(self, campuses: Union[List, None], name:str, provider=None):
         """
         Institution class object.
             :param address: address of the institution
             :param campuses: list of campus information that will be created at the time of creation
             :param name: name of the institution
         """
-        self.address = address
         self.campuses = [campus(name=camp.campus_name, address=camp.campus_address, buildings=None) for camp
                          in campuses] if campuses != [None] else []
         self.name = name
@@ -37,6 +37,11 @@ class institution:
             campus.setCampus_id(i)
             i += 1
 
+    def sendCampusesToDatabase(self):
+        for campus in self.campuses:
+            cf.create_campus(institution_id=self.id, campus_id=campus.campus_id, long=campus.lon, lat=campus.lat,
+                             provider_id=campus.prov, name=campus.name, campus_address=campus.address)
+
     def addCampus(self, camp:campus):
         camp.setInstitution(self.id)
         self.total_campuses += 1
@@ -47,6 +52,11 @@ class institution:
             self.admins.append(user_id)
             if user_id in self.users:
                 self.users.remove(user_id)
+
+
+    def getCampusInfo(self, campus_id):
+        pass
+
 
     def setUser(self, user_id):
         self.users.append(user_id)
@@ -91,7 +101,7 @@ def getCampuses(institution):
 def getName(institution):
     return institution.name
 
-def createNewInstitution(name, address, campus):
+def createNewInstitution(name, prov, campus):
     """
     Creates a new institution. An institution will be the representation of an
     organization/company/school etc.
@@ -100,12 +110,14 @@ def createNewInstitution(name, address, campus):
     :param campus: a list of campuses associated with this institution
     :return: an dictionary object with the confirmed response information
     """
-    if name and address:
-        newInstitute = institution(name=name, campuses=campus, address=address)
-        institutions.append(newInstitute)
+    if name and prov:
+
+        newInstitute = institution(name=name, campuses=campus,provider=prov)
+        cf.create_institution(institution_id=newInstitute.id, institution_name=name, provider_id=prov)
+        newInstitute.sendCampusesToDatabase()
         campuses = [] if not campus else [{"campus_id": camp.campus_id, "campus_name": camp.name,
                                            "campus_address": camp.address} for camp in newInstitute.campuses]
-        return {"institution_name": name, "institution_address": address,
+        return {"institution_name": name, "provider": prov,
                 "associated_campuses": campuses, "institution_Id": newInstitute.id}
     return
 
@@ -118,12 +130,16 @@ def createNewCampus(name, address, buildings, institution_id):
     :param building: a list of buildings associated with this campus
     :return: an dictionary object with the confirmed response information
     """
-    if name and address and buildings:
+    if name and address:
         newCampus = campus(name=name, buildings=buildings, address=address)
-        institution = __findInstitute(institution_id)
-        if institution != -1:
-            institutions[institution].addCampus(newCampus)
-            return {"campus_name": name, "campus_address": address,
+        newCampus.setInstitution(institution_id=institution_id)
+        newCampus.setCampus_id(1)
+        # institution = __findInstitute(institution_id)
+        # if institution != -1:
+            # institutions[institution].addCampus(newCampus)
+        cf.create_campus(institution_id=institution_id, campus_id=newCampus.campus_id, long=newCampus.lon,
+                             lat=newCampus.lat, name=newCampus.name, campus_address=newCampus.address)
+        return {"campus_name": name, "campus_address": address,
                     "associated_buildings": buildings, "campus_Id": newCampus.campus_id}
     return
 
@@ -169,12 +185,13 @@ def getCampus(institution_id, campus_id):
     return None
 
 def getCampuses(institution_id):
-    institution = getInstitute_from_Institutes(institution_id)
-    campuses = []
-    for campus in institution["associated_campuses"]:
-        temp = {"campus_name": campus.name, "campus_address": campus.address,
-            "associated_buildings": campus.buildings, "campus_Id": campus.campus_id}
-        campuses.append(temp)
+    # institution = getInstitute_from_Institutes(institution_id)
+    # campuses = []
+    # for campus in institution["associated_campuses"]:
+    #     temp = {"campus_name": campus.name, "campus_address": campus.address,
+    #         "associated_buildings": campus.buildings, "campus_Id": campus.campus_id}
+    #     campuses.append(temp)
+    campuses = cf.getInstCamp(institution_id)
     return campuses
 
 def getBuilding(institution_id, campus_id, building_id):
@@ -211,28 +228,35 @@ def createUser(name:tuple, email, password, institute_id, verificationType='basi
 
 def addNewBuilding(institution_id, campus_id, name, address, rooms, manager, consumption):
     # TODO: Integrate this with the database using the campus_id and the institution_id
-    institute_index = __findInstitute(institution_id)
-    if name and address and manager and consumption and institute_index != -1:
-        campus = __findCampus(institution=institutions[institute_index], campus_id=campus_id)
-        if campus:
-            roomsList = set()
-            if rooms and rooms != [None]:
-                for rm in rooms:
-                    rm_i = room(temp=rm.temp, room_number=rm.number, length=rm.length, width=rm.width, max_occupancy=rm.space,
-                                height=rm.height)
-                    roomsList.update([rm_i])
+    # institute_index = __findInstitute(institution_id)
+    if name and address and manager and consumption:
+        # campus = __findCampus(institution=institutions[institute_index], campus_id=campus_id)
+        # if campus:
+        roomsList = set()
+        if rooms and rooms != [None]:
+            for rm in rooms:
+                rm_i = room(temp=rm.temp, room_number=rm.number, length=rm.length, width=rm.width, max_occupancy=rm.space,
+                            height=rm.height)
+                roomsList.update([rm_i])
 
-            newBuilding = building(name=name, address=address, manager=manager, consumption=consumption, rooms=list(roomsList))
-            newBuilding.setCampus(campus_id)
-            newBuilding.setBuilding_id()
-            newBuilding.assignRooms()
-            campus.addBuilding(newBuilding)
-            nB_rooms = list() if not roomsList else [{"room_id": rm.room_id, "max_occupancy": rm.max_occupancy,
-                                                  "desired_temp": rm.desired_temp, "length": rm.length,
-                                                  "width": rm.width, "height": rm.height} for rm in roomsList]
-            return {"building_id": newBuilding.building_id, "building_name": newBuilding.name, "manager": newBuilding.manager,
-                    "building_address": newBuilding.address, "average_energy_consumption": newBuilding.monthly_energy_consumption,
-                    "rooms_list": nB_rooms}
+        newBuilding = building(name=name, address=address, manager=manager, consumption=consumption, rooms=list(roomsList))
+        newBuilding.setCampus(campus_id)
+        newBuilding.setBuilding_id()
+        newBuilding.assignRooms()
+        cf.create_building(campus_id=campus_id, building_id=newBuilding.building_id, building_name=newBuilding.name,
+                           building_address=newBuilding.address, manager=newBuilding.manager)
+        for rm in roomsList:
+            cf.create_room(building_id=newBuilding.building_id, room_num=rm.room_number, room_id=rm.room_id,
+                           length=rm.length, width=rm.width, height=rm.height, volume=rm.max_occupancy,
+                           temp=int(rm.desired_temp[:-1]))
+        # newBuilding.assignRooms()
+        # campus.addBuilding(newBuilding)
+        nB_rooms = list() if not roomsList else [{"room_id": rm.room_id, "max_occupancy": rm.max_occupancy,
+                                              "desired_temp": rm.desired_temp, "length": rm.length,
+                                              "width": rm.width, "height": rm.height} for rm in roomsList]
+        return {"building_id": newBuilding.building_id, "building_name": newBuilding.name, "manager": newBuilding.manager,
+                "building_address": newBuilding.address, "average_energy_consumption": newBuilding.monthly_energy_consumption,
+                "rooms_list": nB_rooms}
     return
 
 
@@ -242,13 +266,17 @@ def addNewRoom(institution_id, campus_id, building_id, rm):
                        room_number=rm.number)
         newRoom.setBuilding_id(building_id)
         newRoom.setRoom_id()
+        cf.create_room(building_id=building_id, room_num=newRoom.room_number, room_id=newRoom.room_id,
+                           length=newRoom.length, width=newRoom.width, height=newRoom.height, volume=newRoom.max_occupancy,
+                           temp=int(newRoom.desired_temp[:-1]))
         return {"room_id": newRoom.room_id, "room_number": newRoom.room_number, "length": newRoom.length,
                 "width": newRoom.width, "height": newRoom.height, "desired_room_temp": newRoom.desired_temp,
                 "max_occupancy": newRoom.max_occupancy}
     return
 
 def get_allroom_information(institutionId, campusId, buildingId):
-    pass
+    all_rooms = cf.getBuildRooms(buildingId)
+    return all_rooms
 
 
 

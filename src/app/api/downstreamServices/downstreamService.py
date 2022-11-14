@@ -6,8 +6,8 @@ class businessServices:
         return institution.createUser(name=name, email=email, password=password, verificationType=verification,
                 pin=pin, institute_id=institute)
 
-    def institutionCreation(self, name, address, campuses):
-        return institution.createNewInstitution(name=name, address=address, campus=campuses)
+    def institutionCreation(self, name, prov, campuses):
+        return institution.createNewInstitution(name=name, campus=campuses, prov=prov)
 
     def campusCreation(self, name, address, buildings, institution_id):
         return institution.createNewCampus(name=name, address=address, buildings=buildings,
@@ -37,4 +37,4 @@ class businessServices:
                                       rm=room)
 
     def get_all_rooms(self, institution_id, campus_id, building_id):
-        return institutions.get_allroom_information(institution_id, campus_id, building_id)
+        return institution.get_allroom_information(institution_id, campus_id, building_id)
