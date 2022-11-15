@@ -191,20 +191,20 @@ def getCampuses(institution_id):
     #     temp = {"campus_name": campus.name, "campus_address": campus.address,
     #         "associated_buildings": campus.buildings, "campus_Id": campus.campus_id}
     #     campuses.append(temp)
-    campuses = cf.getInstCamp(institution_id)
-    return campuses
+    campuses = cf.getInstCamps(institution_id)
+    return {"associated_campuses": campuses}
 
-def getBuilding(institution_id, campus_id, building_id):
-    campus = getCampus(institution_id, campus_id)
-    for building in campus["associated_buildings"]:
-        if building.building_id == building_id:
-            return building
-    return None
+def getSpecificBuilding(institution_id, campus_id, building_id):
+    # campus = getCampus(institution_id, campus_id)
+    # for building in campus["associated_buildings"]:
+    #     if building.building_id == building_id:
+    #         return building
+    building = cf.getCampBuilds(campus_id)
+    return buildingInfo
 
 def getBuildings(institution_id, campus_id):
-    campus = getCampus(institution_id, campus_id)
-    print(campus)
-    return campus["associated_buildings"]
+    associated_buildings = cf.getCampBuilds(campus_id)
+    return {"associated_buildings": associated_buildings}
 
 def createUser(name:tuple, email, password, institute_id, verificationType='basic', pin=None):
     login = us_import.credentials(email=email, password=password)

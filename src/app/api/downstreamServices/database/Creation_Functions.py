@@ -156,11 +156,12 @@ def getInstCamps(institutionID):
     # SQLAlchemy Query to select all campuses with
     # matching institutionID
     query = select(CAMPUSES).where(campuses.c.institutionID == institutionID)
-
+    result = list()
     # View the records
     with engine.connect() as conn:
         for row in conn.execute(query):
             print(row)
+            result.append(row)
 
     return result
 
@@ -168,22 +169,24 @@ def getCampBuilds(campusID):
     # SQLAlchemy Query to select all campuses with
     # matching institutionID
     query = select(BUILDINGS).where(buildings.c.campusID == campusID)
-
+    result = list()
     # View the records
     with engine.connect() as conn:
         for row in conn.execute(query):
             print(row)
+            result.append(row)
+    return result
 
 def getBuildRooms(buildingID):
     # SQLAlchemy Query to select all campuses with
     # matching institutionID
     query = select(ROOMS).where(rooms.c.buildingID == buildingID)
-
     conn = engine.connect()
-    result = conn.execute(query).fetchall()
-
+    # result = conn.execute(query).fetchall()
+    result = list()
     # View the records
     with engine.connect() as conn:
         for row in conn.execute(query):
             print(row)
-
+            result.append(row)
+    return result
