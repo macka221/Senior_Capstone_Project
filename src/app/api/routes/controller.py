@@ -4,9 +4,17 @@ from pydantic import BaseModel
 from app.api.downstreamServices.downstreamService import businessServices
 from typing import List, Union
 import app.api.routes.constants as c
+from fastapi.middleware.cors import CORSMiddleware
+
+
+
 
 app = FastAPI()
-
+app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_methods=["*"]
+        )
 apiServices = businessServices()
 
 

@@ -1,8 +1,7 @@
 # create institution table
-from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, select, Float, ForeignKey, Boolean, ForeignKeyConstraint
+from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, select, Float, Boolean, ForeignKeyConstraint, text
 from sqlalchemy.orm import declarative_base, relationship
-
-Base = declarative_base()
+import mysql.connector
 
 user = 'root'
 password = 'password'
@@ -16,7 +15,6 @@ def get_connection():
                          .format(user, password, host, port, database), echo=True)
 
 engine = get_connection()
-
 meta = MetaData(bind=engine)
 
 institutions = Table(
@@ -144,53 +142,48 @@ def create_user(user_id, institution_id, first_name, last_name, email, isAdmin, 
 def getInstUsers(institutionID):
     # SQLAlchemy Query to select all campuses with
     # matching institutionID
-    j = users.join(institutions, users.c.institutionID == institutionID)
-    query = select(USERS).select_from(j)
+    query = select(USERS).where(users.c.institutionID == institutionID)
 
     conn = engine.connect()
-    result = conn.execute(query).fetchall()
+    result = conn.execute(query).fetchmany()
 
     # View the records
-    for record in result:
-        print("\n", record)
-def getInstCamp(institutionID):
+    with engine.connect() as conn:
+        for row in conn.execute(query):
+            print(row)
+
+def getInstCamps(institutionID):
     # SQLAlchemy Query to select all campuses with
     # matching institutionID
-    j = campuses.join(institutions, campuses.c.institutionID == institutionID)
-    query = select(CAMPUSES).select_from(j)
-
-    conn = engine.connect()
-    result = conn.execute(query).fetchall()
+    query = select(CAMPUSES).where(campuses.c.institutionID == institutionID)
 
     # View the records
-    for record in result:
-        print("\n", record)
+    with engine.connect() as conn:
+        for row in conn.execute(query):
+            print(row)
 
     return result
 
 def getCampBuilds(campusID):
     # SQLAlchemy Query to select all campuses with
     # matching institutionID
-    j = buildings.join(campuses, buildings.c.campusID == campusID)
-    query = select(BUILDINGS).select_from(j)
-
-    conn = engine.connect()
-    result = conn.execute(query).fetchall()
+    query = select(BUILDINGS).where(buildings.c.campusID == campusID)
 
     # View the records
-    for record in result:
-        print("\n", record)
+    with engine.connect() as conn:
+        for row in conn.execute(query):
+            print(row)
 
 def getBuildRooms(buildingID):
     # SQLAlchemy Query to select all campuses with
     # matching institutionID
-    j = rooms.join(buildings, rooms.c.buildingID == buildingID)
-    query = select(ROOMS).select_from(j)
+    query = select(ROOMS).where(rooms.c.buildingID == buildingID)
 
     conn = engine.connect()
     result = conn.execute(query).fetchall()
 
     # View the records
-    for record in result:
-        print("\n", record)
-    return result
+    with engine.connect() as conn:
+        for row in conn.execute(query):
+            print(row)
+
