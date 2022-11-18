@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI()
+# TODO: Change the allow_origins to specify a url
 app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
