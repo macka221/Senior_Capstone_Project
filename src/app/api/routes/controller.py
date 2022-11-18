@@ -107,6 +107,20 @@ async def getBuilding(institution_id:str, campus_id:str, building_id):
         raise HTTPException(status_code=404, detail="Buildings not found")
     return buildings
 
+@app.get("/institutions/{institution_id}/campuses/{campus_id}/buildings/{building_id}", summary="Gets weekly forcast of energy cost")
+async def getBuildingWeekCostForcast(institution_id:str, campus_id:str, building_id):
+    costPerday = apiServices.calculateEnergyCostBuildingWeekForcast(institution_id=institution_id, campus_id=campus_id, building_id=building_id)
+    if not costPerday:
+        raise HTTPException(status_code=404, detail="Buildings not found")
+    return costPerday
+
+@app.get("/institutions/{institution_id}/campuses/{campus_id}/buildings/{building_id}", summary="Gets energy cost for the current day")
+async def getBuildingDaysBuildingCost(institution_id:str, campus_id:str, building_id):
+    cost = apiServices.calculateEnergyCostBuildingPerDay(institution_id=institution_id, campus_id=campus_id, building_id=building_id)
+    if not costPerday:
+        raise HTTPException(status_code=404, detail="Buildings not found")
+    return costPerday
+
 @app.get("/institutions/{institution_id}/campuses", summary="gets all campuses associated with an institution")
 async def getAllCampuses(institution_id:str):
     campuses = apiServices.getCampuses(institution_id=institution_id)

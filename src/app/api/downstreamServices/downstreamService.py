@@ -43,3 +43,9 @@ class businessServices:
         building = institution.getBuilding(institution_id, campus_id, building_id)
         return energy.calculateEnergyCostBuildingPerDay(building, long, lat)
 
+    def calculateEnergyCostBuildingWeekForcast(self, institution_id, campus_id, building_id):
+        long = institution.getLongitude(institution_id=institution_id, campus_id=campus_id)
+        lat = institution.getLatitude(institution_id=institution_id, campus_id=campus_id)
+        building = institution.getBuilding(institution_id, campus_id, building_id)
+        return energy.calculateEnergyCostBuildingPer(building, long, lat)
+
