@@ -40,7 +40,7 @@ class building:
         self.monthly_energy_consumption = consumption
         self.campus_id = None
         self.building_id = None
-        self.energy_cost = energy_cost
+        self.energy_cost = 2.50
 
     def setMonthly_energy_consumption(self, energy):
         self.monthly_energy_consumption = energy
