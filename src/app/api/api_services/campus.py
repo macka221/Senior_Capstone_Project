@@ -23,8 +23,6 @@ class campus:
         self.institution = None
         self.campus_id = None
         self.buildingNumber = len(buildings) if buildings else 0
-        self.long = long
-        self.lat = lat
 
     def getAddress(self):
         return self.address
