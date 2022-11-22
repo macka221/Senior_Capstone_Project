@@ -1,5 +1,7 @@
 from app.api.api_services.buildings import building
 from typing import Union, List
+import requests
+import urllib.parse
 
 class provider:
     def __init__(self, name:str, rate:float, cost:float):
@@ -23,6 +25,34 @@ class campus:
         self.institution = None
         self.campus_id = None
         self.buildingNumber = len(buildings) if buildings else 0
+        self.prov = "Deprecated"
+        
+        self.__setLonLat()
+        if buildings:
+            self.setCreateBuildings()
+
+    
+    def createBuildings(self):
+        self.buildings = []
+        for build in self.buildings:
+            newBuilding = building(address=build.address, rooms=None, name=build.name, manager=build.manager,
+                    consumption=build.consumption)
+            self.buildings.append(newBuilding)
+
+    def __setLonLat(self):
+        try:
+            q_address = urllib.parse.quote(self.address)
+            resp = requests.get(f'https://nominatim.openstreetmap.org/search/{q_address}?format=json')
+            self.lat, self.lon = float(resp.json()[0]['lat']), float(resp.json()[0]['lon'])
+        except IndexError as err:
+            print(f"""Failed to locate the address against nominatim open street map API! Recieved the following error
+            {err}
+            
+            Address should be in the following format
+                <street_number> <street_name> <city_name>, <state>, <zipcode>
+            An example of this is 830 Westview Dr SW Atlanta, GA, 30354. Please adjust accordingling and try again""")
+            
+            raise ValueError
 
     def getAddress(self):
         return self.address
@@ -40,7 +70,7 @@ class campus:
     def setInstitution(self, institution_id):
         self.institution = institution_id
 
-    def setCampus_id(self, campus_number:int):
+    def setCampus_id(self):
         self.campus_id = self.institution + f"-C-{''.join(self.name.split()).lower()[:5]}-{campus_number}"
 
     def assignBuildings(self):

@@ -28,6 +28,8 @@ campuses = Table(
     Column('institutionID', String(45)),
     Column('campusID', String(45), primary_key=True),
     Column('provider_id', String(45)),
+    Column('campus_address', String(60)),
+    Column('campus_name', String(45)),
     Column('long', Float),
     Column('lat', Float),
     ForeignKeyConstraint(
@@ -40,6 +42,7 @@ buildings = Table(
     Column('buildingID', String(45), primary_key=True),
     Column('building_name', String(45)),
     Column('building_address', String(45)),
+    Column('manager', String(45)),
     ForeignKeyConstraint(
         ['campusID'], ['campuses.campusID'], name="fk_building_campusID"
     )
@@ -53,6 +56,7 @@ rooms = Table(
     Column('width', Float),
     Column('height', Float),
     Column('volume', Integer),
+    Column('desired_temp', Float),
     ForeignKeyConstraint(
         ['buildingID'], ['buildings.buildingID'], name="fk_rooms_buildingID"
     )
@@ -79,7 +83,7 @@ BUILDINGS = meta.tables['buildings']
 ROOMS = meta.tables['rooms']
 USERS = meta.tables['users']
 
-def create_institution(institution_id, institution_name, provider_id):
+def create_institution(institution_id, institution_name, provider_id="Deprecated"):
     ins = institutions.insert().values(institutionID=institution_id,
                                        institution_name=institution_name,
                                        providerID=provider_id)
@@ -87,33 +91,37 @@ def create_institution(institution_id, institution_name, provider_id):
     result = conn.execute(ins)
     return result
 
-def create_campus(institution_id, campus_id, provider_id, long, lat):
+def create_campus(institution_id, campus_id, long, lat, campus_address, name, provider_id="Deprecated"):
     ins = campuses.insert().values(institutionID=institution_id,
                                         campusID=campus_id,
                                         provider_id=provider_id,
+                                        campus_address=campus_address,
+                                        campus_name=name,
                                         long=long,
                                         lat=lat)
     conn = engine.connect()
     result = conn.execute(ins)
     return result
 
-def create_building(campus_id, building_id, building_name, building_address):
+def create_building(campus_id, building_id, building_name, building_address, manager):
     ins = buildings.insert().values(campusID=campus_id,
                                     buildingID=building_id,
                                     building_name=building_name,
-                                    building_address=building_address)
+                                    building_address=building_address,
+                                    manager=manager)
     conn = engine.connect()
     result = conn.execute(ins)
     return result
 
-def create_room(building_id, room_num, room_id, length, width, height, volume):
+def create_room(building_id, room_num, room_id, length, width, height, volume, temp):
     ins = rooms.insert().values(buildingID=building_id,
                                     room_num=room_num,
                                     roomID=room_id,
                                     length=length,
                                     width=width,
                                     height=height,
-                                    volume=volume)
+                                    volume=volume,
+                                    desired_temp=temp)
     conn = engine.connect()
     result = conn.execute(ins)
     return result
@@ -129,6 +137,17 @@ def create_user(user_id, institution_id, first_name, last_name, email, isAdmin, 
                                 admin_pin=admin_pin)
     conn = engine.connect()
     result = conn.execute(ins)
+    return result
+
+def getInst(institution_id):
+    query = select(INSTITUTIONS).where(institutions.c.institutionID == institution_id)
+
+    conn = engine.connect()
+    result = conn.execute(query).fetchmany()
+    
+    for val in result:
+        print(val)
+
     return result
 
 def getInstUsers(institutionID):
@@ -148,32 +167,37 @@ def getInstCamps(institutionID):
     # SQLAlchemy Query to select all campuses with
     # matching institutionID
     query = select(CAMPUSES).where(campuses.c.institutionID == institutionID)
-
+    result = list()
     # View the records
     with engine.connect() as conn:
         for row in conn.execute(query):
             print(row)
+            result.append(row)
+
+    return result
 
 def getCampBuilds(campusID):
     # SQLAlchemy Query to select all campuses with
     # matching institutionID
     query = select(BUILDINGS).where(buildings.c.campusID == campusID)
-
+    result = list()
     # View the records
     with engine.connect() as conn:
         for row in conn.execute(query):
             print(row)
+            result.append(row)
+    return result
 
 def getBuildRooms(buildingID):
     # SQLAlchemy Query to select all campuses with
     # matching institutionID
     query = select(ROOMS).where(rooms.c.buildingID == buildingID)
-
     conn = engine.connect()
-    result = conn.execute(query).fetchall()
-
+    # result = conn.execute(query).fetchall()
+    result = list()
     # View the records
     with engine.connect() as conn:
         for row in conn.execute(query):
             print(row)
-
+            result.append(row)
+    return result

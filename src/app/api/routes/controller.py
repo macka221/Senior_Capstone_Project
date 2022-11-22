@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI()
+# TODO: Change the allow_origins to specify a url
 app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
@@ -30,19 +31,28 @@ class campusInfoBasic(BaseModel):
     campus_name: str = Body(default=...)
     campus_address: str = Body(default=...)
 
-class newInstitution(BaseModel):
-    name: str = Body(default=..., alias="institution_name")
-    address: str = Body(default=..., alias="institution_address")
-    campuses: List[Union[campusInfoBasic, None]] = Body(default=[None], exclude_unset=True, alias="associated_campuses")
-
-class newCampus(BaseModel):
-    name: str = Body(default=..., alias="campus_name")
-    address: str = Body(default=..., alias="campus_address")
-    buildings: List = Body(exclude_unset=True, alias="associated_buildings")
 
 class provider(BaseModel):
     name: str = Body(default=..., alias="provider_name")
     rate: float = Body(default=...)
+
+class newInstitution(BaseModel):
+    name: str = Body(default=..., alias="institution_name")
+    address: str = Body(default=..., alias="institution_address")
+    campuses: List[Union[campusInfoBasic, None]] = Body(default=[None], exclude_unset=True, alias="associated_campuses")
+    prov: Union[provider, str] = Body(default="Deprecated", exclude_unset=True, alias="provider")
+
+class nestedBuilding(BaseModel):
+    name: str = Body(default=..., alias="building_name")
+    address: str = Body(default=..., alias="building_address")
+    consumption: float = Body(default=..., alias="total_energy_consumption")
+    manager: str = Body(default=..., alias="building_manager")
+
+class newCampus(BaseModel):
+    name: str = Body(default=..., alias="campus_name")
+    buildings: List[Union[nestedBuilding, None]] = Body(default=[], exclude_unset=True, alias="associated_buildings")
+    prov: Union[provider, str] = Body(default="Deprecated", exclude_unset=True, alias="provider")
+    address: str = Body(default=..., alias="campus_address")
 
 class Room(BaseModel):
     length: int = Body(alias="room_length", default=...)
@@ -62,7 +72,7 @@ class newBuilding(BaseModel):
 
 
 
-@app.post("/app/institutions", summary="Create a new Institution")
+@app.post("/institutions", summary="Create a new Institution")
 async def newInstitution(institutionInfo: newInstitution=Body(examples={"Successful Post": c._NEW_INSTITUTION})):
     """
     Use this endpoint if you would like to create a new instance of an institution. This requires a JSON body in the format of the example below.\n
@@ -81,7 +91,7 @@ async def newInstitution(institutionInfo: newInstitution=Body(examples={"Success
             ]
         }
     """
-    newInstitute = apiServices.institutionCreation(institutionInfo.name, institutionInfo.address, institutionInfo.campuses)
+    newInstitute = apiServices.institutionCreation(institutionInfo.name, institutionInfo.prov, institutionInfo.campuses)
     if not newInstitute:
         raise HTTPException(status_code=404, detail="Failed to create institution!")
     return newInstitute
@@ -94,7 +104,7 @@ async def createNewCampus(institution_id,campusInfo: newCampus=Body(examples={"S
         raise HTTPException(status_code=404, detail="Failed to create campus!")
     return newCampus
 
-@app.get("/app/institutions/{institution_id}", summary="Get institution information")
+@app.get("/institutions/{institution_id}", summary="Get institution information")
 async def getInstitute(institution_id:str):
     institute = apiServices.getInstitution(institute_id=institution_id)
     if not institute:
@@ -145,7 +155,7 @@ async def getAllBuildings(institution_id:str, campus_id:str):
 
 
 
-@app.post("/app/institutions/{institution_id}/campus/{campus_id}/buildings",summary="Create a new building")
+@app.post("/institutions/{institution_id}/campus/{campus_id}/buildings",summary="Create a new building")
 async def newBuilding(institution_id:str, campus_id:str, buildingInfo: newBuilding=Body(
                                 examples={"Succesful Post": c._NEW_BUILDINGS})):
     building = apiServices.buildingCreation(instituteId=institution_id, name=buildingInfo.name, address=buildingInfo.address,
@@ -156,7 +166,7 @@ async def newBuilding(institution_id:str, campus_id:str, buildingInfo: newBuildi
     return building
 
 
-@app.post("/app/institutions/{institution_id}/users", summary="Creates a new user")
+@app.post("/institutions/{institution_id}/users", summary="Creates a new user")
 async def createNewUser(userInfo: newUser, institution_id: str):
     newUser = apiServices.userCreation(institute=institution_id, name=(userInfo.first_name, userInfo.last_name),
                         email=userInfo.email, password=userInfo.password, pin=userInfo.pin)
@@ -176,9 +186,12 @@ async def addRoomInformation(institution_id, campus_id, building_id, room:Room =
     return newRoom
 
 
-@app.get("/institutions/{institution_id}/campuses/{campus_id}/buildings/{building_id}/rooms", summary="Get all rooms associated with a buidling",deprecated=True)
+@app.get("/institutions/{institution_id}/campuses/{campus_id}/buildings/{building_id}/rooms", summary="Get all rooms associated with a buidling")
 async def getAllRoomsInformation(institution_id:str, campus_id:str, building_id:str):
-    pass
+    building_rooms = apiServices.get_all_rooms(institution_id, campus_id, building_id)
+    if not building_rooms:
+        raise HTTPException(status_code=404, detail="Building not found")
+    return building_rooms
 
 
 @app.get("/institutions/{institution_id}/campuses/{campus_id}/buildings/{building_id}/rooms/{room_id}", summary="Get specific room information",deprecated=True)
