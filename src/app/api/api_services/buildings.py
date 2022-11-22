@@ -37,7 +37,7 @@ class building:
         self.address = address
         self.name = name
         self.manager = manager
-        self.rooms = rooms
+        self.rooms = rooms if rooms else []
         self.monthly_energy_consumption = consumption
         self.campus_id = None
         self.building_id = None

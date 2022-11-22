@@ -133,12 +133,17 @@ def createNewCampus(name, address, buildings, institution_id):
     if name and address:
         newCampus = campus(name=name, buildings=buildings, address=address)
         newCampus.setInstitution(institution_id=institution_id)
-        newCampus.setCampus_id(1)
+        newCampus.setCampus_id()
         # institution = __findInstitute(institution_id)
         # if institution != -1:
             # institutions[institution].addCampus(newCampus)
         cf.create_campus(institution_id=institution_id, campus_id=newCampus.campus_id, long=newCampus.lon,
                              lat=newCampus.lat, name=newCampus.name, campus_address=newCampus.address)
+        if newCampus.buildings:
+            buildings = [{'building_id': bd.building_id, "building_name": bd.name} for bd in newCampus.buildings]
+            for bd in newCampus.buildings:
+                cf.create_building(campus_id, building_id, building_name, building_address, manager)
+
         return {"campus_name": name, "campus_address": address,
                     "associated_buildings": buildings, "campus_Id": newCampus.campus_id}
     return
@@ -170,11 +175,14 @@ def getInstitute_from_Institutes(institute_id):
     :param institute: desired institution
     :return: a dictionary of the JSON response
     """
-    institute_index = __findInstitute(institute_id)
-    if institute_index != -1:
-        found = institutions[institute_index]
-        return {"institution_name": found.name, "institution_address": found.address,
-                "associated_campuses":found.campuses}
+    # institute_index = __findInstitute(institute_id)
+    # if institute_index != -1:
+      #  found = institutions[institute_index]
+    try:
+        found = dict(cf.getInst(institute_id)[0])
+        return {"institution_name": found.get('institution_name'), "institution_id": found.get("institutionID")}
+    except IndexError:
+        return
 
 def getCampus(institution_id, campus_id):
     institution = getInstitute_from_Institutes(institution_id)

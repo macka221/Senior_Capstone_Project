@@ -139,6 +139,17 @@ def create_user(user_id, institution_id, first_name, last_name, email, isAdmin, 
     result = conn.execute(ins)
     return result
 
+def getInst(institution_id):
+    query = select(INSTITUTIONS).where(institutions.c.institutionID == institution_id)
+
+    conn = engine.connect()
+    result = conn.execute(query).fetchmany()
+    
+    for val in result:
+        print(val)
+
+    return result
+
 def getInstUsers(institutionID):
     # SQLAlchemy Query to select all campuses with
     # matching institutionID

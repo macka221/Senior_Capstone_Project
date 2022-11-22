@@ -3,3 +3,4 @@
 /**/*.pyc
 /**/*.swp
 /**/.idea/
+/app/api/downstreamServices/database/Query.py
