@@ -35,6 +35,8 @@ class businessServices:
     def createNewRoom(self, institution_id, campus_id, building_id, room):
         return institution.addNewRoom(institution_id=institution_id, campus_id=campus_id, building_id=building_id,
                                       rm=room)
+    def getAllInstitutions(self):
+        return institution.getAllInstitutions()
 
     def get_all_rooms(self, institution_id, campus_id, building_id):
         return institution.get_allroom_information(institution_id, campus_id, building_id)

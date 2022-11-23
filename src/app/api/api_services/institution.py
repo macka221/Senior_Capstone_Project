@@ -31,11 +31,9 @@ class institution:
             self.__campusDefaultSets()
 
     def __campusDefaultSets(self):
-        i = 1
         for campus in self.campuses:
             campus.setInstitution(self.id)
-            campus.setCampus_id(i)
-            i += 1
+            campus.setCampus_id()
 
     def sendCampusesToDatabase(self):
         for campus in self.campuses:
@@ -130,7 +128,7 @@ def createNewCampus(name, address, buildings, institution_id):
     :param building: a list of buildings associated with this campus
     :return: an dictionary object with the confirmed response information
     """
-    if name and address:
+    if name and address and cf.getInst(institution_id):
         newCampus = campus(name=name, buildings=buildings, address=address)
         newCampus.setInstitution(institution_id=institution_id)
         newCampus.setCampus_id()
@@ -190,7 +188,7 @@ def getCampus(institution_id, campus_id):
         if campus.campus_id == campus_id:
             return {"campus_name": campus.name, "campus_address": campus.address,
                     "associated_buildings": campus.buildings, "campus_Id": campus.campus_id}
-    return None
+    return
 
 def getCampuses(institution_id):
     # institution = getInstitute_from_Institutes(institution_id)
@@ -199,8 +197,10 @@ def getCampuses(institution_id):
     #     temp = {"campus_name": campus.name, "campus_address": campus.address,
     #         "associated_buildings": campus.buildings, "campus_Id": campus.campus_id}
     #     campuses.append(temp)
-    campuses = cf.getInstCamps(institution_id)
-    return {"associated_campuses": campuses}
+    if getInstitute_from_Institutes(institution_id):
+        campuses = cf.getInstCamps(institution_id)
+        return {"associated_campuses": campuses}
+    return
 
 def getSpecificBuilding(institution_id, campus_id, building_id):
     # campus = getCampus(institution_id, campus_id)
@@ -286,5 +286,10 @@ def get_allroom_information(institutionId, campusId, buildingId):
     all_rooms = cf.getBuildRooms(buildingId)
     return all_rooms
 
+def getAllInstitutions():
+    allInstitutions = cf.getAllInst()
+    if not allInstitutions:
+        return
+    return {"institutions": allInstitutions}
 
 
