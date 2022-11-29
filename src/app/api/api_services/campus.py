@@ -2,6 +2,7 @@ from app.api.api_services.buildings import building
 from typing import Union, List
 import requests
 import urllib.parse
+import uuid
 
 class provider:
     def __init__(self, name:str, rate:float, cost:float):
@@ -29,7 +30,7 @@ class campus:
         
         self.__setLonLat()
         if buildings:
-            self.setCreateBuildings()
+            self.createBuildings()
 
     
     def createBuildings(self):
@@ -70,8 +71,8 @@ class campus:
     def setInstitution(self, institution_id):
         self.institution = institution_id
 
-    def setCampus_id(self, campus_number):
-        self.campus_id = self.institution + f"-C-{''.join(self.name.split()).lower()[:5]}-{campus_number}"
+    def setCampus_id(self):
+        self.campus_id = self.institution + f"-C-{''.join(self.name.split()).lower()[:5]}-{str(uuid.uuid4())[:4]}"
 
     def assignBuildings(self):
         for item in self.buildings:

@@ -96,6 +96,14 @@ async def newInstitution(institutionInfo: newInstitution=Body(examples={"Success
         raise HTTPException(status_code=404, detail="Failed to create institution!")
     return newInstitute
 
+@app.get("/institutions", summary="Get all institutions")
+async def getAllInstitutions():
+    allInstitutions = apiServices.getAllInstitutions()
+    if not allInstitutions:
+        raise HTTPException(status_code=404, detail="No institutions present.")
+    return allInstitutions
+
+
 @app.post("/institutions/{institution_id}/campuses", summary="Creates a new campus")
 async def createNewCampus(institution_id,campusInfo: newCampus=Body(examples={"Successful Post": c._NEW_CAMPUS})):
     newCampus = apiServices.campusCreation(campusInfo.name, campusInfo.address,
@@ -103,6 +111,13 @@ async def createNewCampus(institution_id,campusInfo: newCampus=Body(examples={"S
     if not newCampus:
         raise HTTPException(status_code=404, detail="Failed to create campus!")
     return newCampus
+
+#@app.get("/insititutions/{institution_id}/campuses", summary="Get all campuses from Institution")
+#async def getAllInstitutionCampuses(institution_id):
+ #   campusInfo = apiServices.getCampuses(institution_id)
+  #  if not campusInfo:
+   #     raise HTTPException(status_code=404, detail="Could not find institution")
+    #return campusInfo
 
 @app.get("/institutions/{institution_id}", summary="Get institution information")
 async def getInstitute(institution_id:str):
@@ -118,7 +133,7 @@ async def getCampus(institution_id:str, campus_id:str):
         raise HTTPException(status_code=404, detail="Campus not found")
     return campus
 
-@app.get("/institutions/{institution_id}/campuses/{campus_id}/buildings/{building_id}", summary="gets a specific buildings information")
+@app.get("/institutions/{institution_id}/campuses/{campus_id}/buildings/{building_id}", summary="gets a specific buildings information", deprecated=True)
 async def getBuilding(institution_id:str, campus_id:str, building_id):
     buildings = apiServices.getBuilding(institution_id=institution_id, campus_id=campus_id, building_id=building_id)
     if not buildings:
@@ -143,7 +158,7 @@ async def getBuildingDaysBuildingCost(institution_id:str, campus_id:str, buildin
 async def getAllCampuses(institution_id:str):
     campuses = apiServices.getCampuses(institution_id=institution_id)
     if not campuses:
-        raise HTTPException(status_code=404, detail="Campuses not found")
+        raise HTTPException(status_code=404, detail="Institution not found")
     return campuses
 
 @app.get("/institutions/{institution_id}/campuses/{campus_id}/buildings", summary="gets all buildings associated with a campus")
@@ -166,7 +181,7 @@ async def newBuilding(institution_id:str, campus_id:str, buildingInfo: newBuildi
     return building
 
 
-@app.post("/institutions/{institution_id}/users", summary="Creates a new user")
+@app.post("/institutions/{institution_id}/users", summary="Creates a new user", deprecated=True)
 async def createNewUser(userInfo: newUser, institution_id: str):
     newUser = apiServices.userCreation(institute=institution_id, name=(userInfo.first_name, userInfo.last_name),
                         email=userInfo.email, password=userInfo.password, pin=userInfo.pin)
@@ -186,7 +201,7 @@ async def addRoomInformation(institution_id, campus_id, building_id, room:Room =
     return newRoom
 
 
-@app.get("/institutions/{institution_id}/campuses/{campus_id}/buildings/{building_id}/rooms", summary="Get all rooms associated with a buidling")
+@app.get("/institutions/{institution_id}/campuses/{campus_id}/buildings/{building_id}/rooms", summary="Get all rooms associated with a buidling", deprecated=True)
 async def getAllRoomsInformation(institution_id:str, campus_id:str, building_id:str):
     building_rooms = apiServices.get_all_rooms(institution_id, campus_id, building_id)
     if not building_rooms:
@@ -199,11 +214,13 @@ async def getRoomInfo(institution_id:str, campus_id:str, building_id:str, room_i
     pass
 
 
-@app.get("/institutions/{institution_id}/users", summary="Get all user information",deprecated=True)
+@app.get("/institutions/{institution_id}/users", summary="Get all user information", deprecated=True)
 async def getAllUsers(institution_id:str):
     pass
 
 
-@app.get("/institutions/{institution_id}/users/{user_id}", summary="Get user information",deprecated=True)
+@app.get("/institutions/{institution_id}/users/{user_id}", summary="Get user information", deprecated=True)
 async def getUserInfo(institution_id:str, user_id:str):
     pass
+
+

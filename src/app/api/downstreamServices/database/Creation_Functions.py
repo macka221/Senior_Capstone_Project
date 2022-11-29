@@ -139,6 +139,17 @@ def create_user(user_id, institution_id, first_name, last_name, email, isAdmin, 
     result = conn.execute(ins)
     return result
 
+def getAllInst():
+    query = select([INSTITUTIONS])
+    conn = engine.connect()
+    result = conn.execute(query).fetchall()
+
+    for val in result:
+        print(val)
+
+    return result
+
+
 def getInst(institution_id):
     query = select(INSTITUTIONS).where(institutions.c.institutionID == institution_id)
 

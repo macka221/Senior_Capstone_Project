@@ -49,6 +49,12 @@ class businessServices:
         building = institution.getBuilding(institution_id, campus_id, building_id)
         return energy.calculateEnergyCostBuildingPer(building, long, lat)
 
+    def getAllInstitutions(self):
+        return institution.getAllInstitutions()
+
     def get_all_rooms(self, institution_id, campus_id, building_id):
         return institution.get_allroom_information(institution_id, campus_id, building_id)
+
+    def getBuilding(self, institution_id, campus_id, building_id):
+        return institution.getSpecificBuilding(institution_id, campus_id, building_id)
 

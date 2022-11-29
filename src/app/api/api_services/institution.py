@@ -31,11 +31,9 @@ class institution:
             self.__campusDefaultSets()
 
     def __campusDefaultSets(self):
-        i = 1
         for campus in self.campuses:
             campus.setInstitution(self.id)
-            campus.setCampus_id(i)
-            i += 1
+            campus.setCampus_id()
 
     def sendCampusesToDatabase(self):
         for campus in self.campuses:
@@ -130,7 +128,7 @@ def createNewCampus(name, address, buildings, institution_id):
     :param building: a list of buildings associated with this campus
     :return: an dictionary object with the confirmed response information
     """
-    if name and address:
+    if name and address and cf.getInst(institution_id):
         newCampus = campus(name=name, buildings=buildings, address=address)
         newCampus.setInstitution(institution_id=institution_id)
         newCampus.setCampus_id()
@@ -189,17 +187,10 @@ def getInstitute_from_Institutes(institute_id):
       #  found = institutions[institute_index]
     try:
         found = dict(cf.getInst(institute_id)[0])
-        return {"institution_name": found.get('institution_name'), "institution_id": found.get("institutionID")}
+        return {"institution_name": found.get('institution_name'), "institution_id": found.get("institutionID"), "associated_campuses":[]}
     except IndexError:
         return
 
-def getCampus(institution_id, campus_id):
-    institution = getInstitute_from_Institutes(institution_id)
-    for campus in institution["associated_campuses"]:
-        if campus.campus_id == campus_id:
-            return {"campus_name": campus.name, "campus_address": campus.address,
-                    "associated_buildings": campus.buildings, "campus_Id": campus.campus_id}
-    return None
 
 def getCampuses(institution_id):
     # institution = getInstitute_from_Institutes(institution_id)
@@ -208,16 +199,28 @@ def getCampuses(institution_id):
     #     temp = {"campus_name": campus.name, "campus_address": campus.address,
     #         "associated_buildings": campus.buildings, "campus_Id": campus.campus_id}
     #     campuses.append(temp)
-    campuses = cf.getInstCamps(institution_id)
-    return {"associated_campuses": campuses}
+    if getInstitute_from_Institutes(institution_id):
+        campuses = cf.getInstCamps(institution_id)
+        return {"associated_campuses": campuses}
+    return
 
+def getCampus(institution_id, campus_id):
+    institution = getCampuses(institution_id)
+    if institution:
+        for campus in institution["associated_campuses"]:
+            camp = dict(campus)
+            if camp.get('campusID') == campus_id:
+                return {"campus_name": camp.get('campus_name'), "campus_address": camp.get('campus_address'),
+                        "associated_buildings": [], "campus_Id": camp.get('campusID'), 'coord': {
+                        'lat': camp.get('lat'), 'long': camp.get('long')}}
+    return
 def getSpecificBuilding(institution_id, campus_id, building_id):
     # campus = getCampus(institution_id, campus_id)
     # for building in campus["associated_buildings"]:
     #     if building.building_id == building_id:
     #         return building
     building = cf.getCampBuilds(campus_id)
-    return buildingInfo
+    return {'building': building}
 
 def getBuildings(institution_id, campus_id):
     associated_buildings = cf.getCampBuilds(campus_id)
@@ -295,5 +298,10 @@ def get_allroom_information(institutionId, campusId, buildingId):
     all_rooms = cf.getBuildRooms(buildingId)
     return all_rooms
 
+def getAllInstitutions():
+    allInstitutions = cf.getAllInst()
+    if not allInstitutions:
+        return
+    return {"institutions": allInstitutions}
 
 
