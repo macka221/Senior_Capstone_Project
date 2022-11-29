@@ -133,7 +133,7 @@ async def getCampus(institution_id:str, campus_id:str):
         raise HTTPException(status_code=404, detail="Campus not found")
     return campus
 
-@app.get("/institutions/{institution_id}/campuses/{campus_id}/buildings/{building_id}", summary="gets a specific buildings information")
+@app.get("/institutions/{institution_id}/campuses/{campus_id}/buildings/{building_id}", summary="gets a specific buildings information", deprecated=True)
 async def getBuilding(institution_id:str, campus_id:str, building_id):
     buildings = apiServices.getBuilding(institution_id=institution_id, campus_id=campus_id, building_id=building_id)
     if not buildings:
@@ -167,7 +167,7 @@ async def newBuilding(institution_id:str, campus_id:str, buildingInfo: newBuildi
     return building
 
 
-@app.post("/institutions/{institution_id}/users", summary="Creates a new user")
+@app.post("/institutions/{institution_id}/users", summary="Creates a new user", deprecated=True)
 async def createNewUser(userInfo: newUser, institution_id: str):
     newUser = apiServices.userCreation(institute=institution_id, name=(userInfo.first_name, userInfo.last_name),
                         email=userInfo.email, password=userInfo.password, pin=userInfo.pin)
@@ -187,7 +187,7 @@ async def addRoomInformation(institution_id, campus_id, building_id, room:Room =
     return newRoom
 
 
-@app.get("/institutions/{institution_id}/campuses/{campus_id}/buildings/{building_id}/rooms", summary="Get all rooms associated with a buidling")
+@app.get("/institutions/{institution_id}/campuses/{campus_id}/buildings/{building_id}/rooms", summary="Get all rooms associated with a buidling", deprecated=True)
 async def getAllRoomsInformation(institution_id:str, campus_id:str, building_id:str):
     building_rooms = apiServices.get_all_rooms(institution_id, campus_id, building_id)
     if not building_rooms:

@@ -178,17 +178,10 @@ def getInstitute_from_Institutes(institute_id):
       #  found = institutions[institute_index]
     try:
         found = dict(cf.getInst(institute_id)[0])
-        return {"institution_name": found.get('institution_name'), "institution_id": found.get("institutionID")}
+        return {"institution_name": found.get('institution_name'), "institution_id": found.get("institutionID"), "associated_campuses":[]}
     except IndexError:
         return
 
-def getCampus(institution_id, campus_id):
-    institution = getInstitute_from_Institutes(institution_id)
-    for campus in institution["associated_campuses"]:
-        if campus.campus_id == campus_id:
-            return {"campus_name": campus.name, "campus_address": campus.address,
-                    "associated_buildings": campus.buildings, "campus_Id": campus.campus_id}
-    return
 
 def getCampuses(institution_id):
     # institution = getInstitute_from_Institutes(institution_id)
@@ -202,13 +195,22 @@ def getCampuses(institution_id):
         return {"associated_campuses": campuses}
     return
 
+def getCampus(institution_id, campus_id):
+    institution = getCampuses(institution_id)
+    if institution:
+        for campus in institution["associated_campuses"]:
+            camp = dict(campus)
+            if camp.get('campusID') == campus_id:
+                return {"campus_name": camp.get('campus_name'), "campus_address": camp.get('campus_address'),
+                        "associated_buildings": [], "campus_Id": camp.get('campusID')}
+    return
 def getSpecificBuilding(institution_id, campus_id, building_id):
     # campus = getCampus(institution_id, campus_id)
     # for building in campus["associated_buildings"]:
     #     if building.building_id == building_id:
     #         return building
     building = cf.getCampBuilds(campus_id)
-    return buildingInfo
+    return {'building': building}
 
 def getBuildings(institution_id, campus_id):
     associated_buildings = cf.getCampBuilds(campus_id)

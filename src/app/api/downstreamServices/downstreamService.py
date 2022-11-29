@@ -40,3 +40,6 @@ class businessServices:
 
     def get_all_rooms(self, institution_id, campus_id, building_id):
         return institution.get_allroom_information(institution_id, campus_id, building_id)
+
+    def getBuilding(self, institution_id, campus_id, building_id):
+        return institution.getSpecificBuilding(institution_id, campus_id, building_id)
