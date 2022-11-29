@@ -202,7 +202,8 @@ def getCampus(institution_id, campus_id):
             camp = dict(campus)
             if camp.get('campusID') == campus_id:
                 return {"campus_name": camp.get('campus_name'), "campus_address": camp.get('campus_address'),
-                        "associated_buildings": [], "campus_Id": camp.get('campusID')}
+                        "associated_buildings": [], "campus_Id": camp.get('campusID'), 'coord': {
+                        'lat': camp.get('lat'), 'long': camp.get('long')}}
     return
 def getSpecificBuilding(institution_id, campus_id, building_id):
     # campus = getCampus(institution_id, campus_id)
