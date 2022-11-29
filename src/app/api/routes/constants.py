@@ -19,7 +19,7 @@ _NEW_INSTITUTION = {
             "associated_campuses": [
                 {
                     "campus_name": "Morehouse College Main Campus",
-                    "campus_address": "830 Westview Dr, SW Atlanta, GA, 30354"
+                    "campus_address": "830 Westview Dr SW Atlanta, GA, 30354"
                 }
             ]
         }
@@ -36,7 +36,12 @@ _NEW_CAMPUS = {
             "campus_name": "Morehouse College Main Campus",
             "campus_address": "830 Westview Dr SW Atlanta, GA, 30354",
             "associated_buildings": [
-                "Morehouse College"
+                {
+                    "building_name": "Dansby Hall",
+                    "building_address": "830 Westview Dr SW 1 Atlanta, GA, 30354",
+                    "total_energy_consumption": 1214.12,
+                    "building_manager": "O-MC-0f29be-u-653b24"
+                }
             ]
         }
     }
