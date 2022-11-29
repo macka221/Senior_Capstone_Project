@@ -1,6 +1,8 @@
-from app.api.api_services.energy import *
-from app.api.api_services.buildings import building, room
+from energy import *
+from buildings import building, room
 
-newRoom = room(temp=rm.temp, length=rm.length, width=rm.width, height=rm.height, max_occupancy=rm.space,
-                       room_number=rm.number)
-newBuilding = building(name="dansby", address="water", manager="brandon", consumption=1, rooms=[])
+newRoom = room(temp=294.81, length=5, width=4, height=3, max_occupancy=12,
+                       room_number=1)
+newBuilding = building(address="water", rooms=[newRoom], name="dansby",manager="brandon", consumption=1)
+
+print(calculateEnergyCostBuildingPerWeekForcast(newBuilding, -84.4255, 33.7561))

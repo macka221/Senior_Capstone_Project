@@ -33,7 +33,7 @@ class room:
 
 
 class building:
-    def __init__(self, address:str, rooms:Union[List[room], None], name:str, manager:str, consumption:float, energy_cost):
+    def __init__(self, address:str, rooms:Union[List[room], None], name:str, manager:str, consumption:float):
         self.address = address
         self.name = name
         self.manager = manager
@@ -41,7 +41,7 @@ class building:
         self.monthly_energy_consumption = consumption
         self.campus_id = None
         self.building_id = None
-        self.energy_cost = 2.50
+        self.energy_cost = 0.14
 
     def setMonthly_energy_consumption(self, energy):
         self.monthly_energy_consumption = energy

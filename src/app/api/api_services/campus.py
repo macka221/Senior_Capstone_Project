@@ -17,7 +17,7 @@ class provider:
 
 
 class campus:
-    def __init__(self, address:str, buildings:Union[List[building], None],name:str, long:float, lat:float):
+    def __init__(self, address:str, buildings:Union[List[building], None],name:str):
         # TODO: incorporate provider into this class
         self.address = address
         self.buildings = buildings if buildings else []
@@ -70,7 +70,7 @@ class campus:
     def setInstitution(self, institution_id):
         self.institution = institution_id
 
-    def setCampus_id(self):
+    def setCampus_id(self, campus_number):
         self.campus_id = self.institution + f"-C-{''.join(self.name.split()).lower()[:5]}-{campus_number}"
 
     def assignBuildings(self):
