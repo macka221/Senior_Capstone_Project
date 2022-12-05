@@ -2,3 +2,5 @@ fastapi
 uvicorn
 starlette
 mysql-connector-python-rf
+mysql
+
