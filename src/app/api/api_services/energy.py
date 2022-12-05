@@ -1,7 +1,7 @@
 import requests
 import json
 
-from app.api.api_services.buildings import building, room
+from buildings import building, room
 api_key = "ee97b4002e4cb219307255cb2643835a"
 
 def calculateEnergyCostBuildingPerDay(building, long, lat):

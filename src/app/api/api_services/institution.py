@@ -93,9 +93,6 @@ def getAddress(instituion):
 def addCampus(institution, campus):
     institution.campuses.append(campus)
 
-def getCampuses(institution):
-    return institution.campuses
-
 def getName(institution):
     return institution.name
 

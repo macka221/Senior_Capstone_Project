@@ -4,7 +4,7 @@ from sqlalchemy.orm import declarative_base, relationship
 import mysql.connector
 
 user = 'root'
-password = '59215921'
+password = ''
 host = 'localhost'
 port = 3306
 database = 'CapstoneProject'
